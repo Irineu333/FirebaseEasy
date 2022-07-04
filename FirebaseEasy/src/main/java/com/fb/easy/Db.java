@@ -55,9 +55,7 @@ public final class Db implements GetContract, ListenerContract {
     @Override
     public <T> Job listenerGeneric(final CallBack.Generic<T> listener) {
         final ValueEventListener valueEventListener =
-                DbUtils.getGenericEvent(listener);
-
-        ref.addValueEventListener(valueEventListener);
+                ref.addValueEventListener(DbUtils.getGenericEvent(listener));
 
         return new Job() {
             @Override
@@ -70,9 +68,7 @@ public final class Db implements GetContract, ListenerContract {
     @Override
     public <T> Job listenerListGeneric(CallBack.ListGeneric<T> listener) {
         final ValueEventListener valueEventListener =
-                DbUtils.getListGenericEvent(listener);
-
-        ref.addValueEventListener(valueEventListener);
+                ref.addValueEventListener(DbUtils.getListGenericEvent(listener));
 
         return new Job() {
             @Override
@@ -85,9 +81,7 @@ public final class Db implements GetContract, ListenerContract {
     @Override
     public Job listenerMap(CallBack.Map listener) {
         final ValueEventListener valueEventListener =
-                DbUtils.getMapEvent(listener);
-
-        ref.addValueEventListener(valueEventListener);
+                ref.addValueEventListener(DbUtils.getMapEvent(listener));
 
         return new Job() {
             @Override
@@ -100,9 +94,7 @@ public final class Db implements GetContract, ListenerContract {
     @Override
     public Job listenerListMap(CallBack.ListMap listener) {
         final ValueEventListener valueEventListener =
-                DbUtils.getListMapEvent(listener);
-
-        ref.addValueEventListener(valueEventListener);
+                ref.addValueEventListener(DbUtils.getListMapEvent(listener));
 
         return new Job() {
             @Override

@@ -1,5 +1,8 @@
 package com.fb.easy;
 
+import androidx.annotation.NonNull;
+
+import java.util.HashMap;
 import java.util.List;
 
 public final class CallBack {
@@ -7,6 +10,8 @@ public final class CallBack {
     private CallBack() {
         //sealed class
     }
+
+    //generic
 
     abstract static class Generic<T> {
 
@@ -34,15 +39,81 @@ public final class CallBack {
         abstract void success(java.util.List<T> result);
     }
 
-    interface Map {
-        void error(Throwable throwable);
+    //sketchware
 
-        void success(java.util.Map<String, java.lang.Object> result);
+    @SuppressWarnings("unchecked")
+    abstract static class Map extends Generic<java.util.Map<java.lang.String, Object>> {
+        public Map() {
+            super((Class<java.util.Map<java.lang.String, Object>>) getMapClass());
+        }
+
+        @NonNull
+        private static Class<?> getMapClass() {
+            return HashMap.class;
+        }
     }
 
-    interface ListMap {
-        void error(Throwable throwable);
+    @SuppressWarnings("unchecked")
+    abstract static class ListMap extends Generic<List<java.util.Map<java.lang.String, Object>>> {
+        public ListMap() {
+            super((Class<List<java.util.Map<java.lang.String, Object>>>) getListClass());
+        }
 
-        void success(List<java.util.Map<String, java.lang.Object>> result);
+        @NonNull
+        private static Class<?> getListClass() {
+            return List.class;
+        }
+    }
+
+    //basics
+
+    abstract static class String extends Generic<java.lang.String> {
+        public String() {
+            super(java.lang.String.class);
+        }
+    }
+
+    abstract static class Double extends Generic<java.lang.Double> {
+        public Double() {
+            super(java.lang.Double.class);
+        }
+    }
+
+    abstract static class Long extends Generic<java.lang.Long> {
+        public Long() {
+            super(java.lang.Long.class);
+        }
+    }
+
+    abstract static class Boolean extends Generic<java.lang.Boolean> {
+        public Boolean() {
+            super(java.lang.Boolean.class);
+        }
+    }
+
+    //basic list
+
+    abstract static class ListString extends ListGeneric<java.lang.String> {
+        public ListString() {
+            super(java.lang.String.class);
+        }
+    }
+
+    abstract static class ListDouble extends ListGeneric<java.lang.Double> {
+        public ListDouble() {
+            super(java.lang.Double.class);
+        }
+    }
+
+    abstract static class ListLong extends ListGeneric<java.lang.Long> {
+        public ListLong() {
+            super(java.lang.Long.class);
+        }
+    }
+
+    abstract static class ListBoolean extends ListGeneric<java.lang.Boolean> {
+        public ListBoolean() {
+            super(java.lang.Boolean.class);
+        }
     }
 }

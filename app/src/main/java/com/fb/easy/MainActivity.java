@@ -1,10 +1,12 @@
 package com.fb.easy;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,19 +18,17 @@ public class MainActivity extends AppCompatActivity {
 
         //generic
 
-        Job job = Db.path("users").listenerListGeneric(
-                new CallBack.ListGeneric<User>(User.class) {
+        Db.path("users").getListMap(
+                new CallBack.ListMap() {
+                    @Override
+                    void success(List<Map<String, Object>> result) {
+                        Log.d("result", String.valueOf(result));
+                    }
+
                     @Override
                     void error(Throwable throwable) {
 
                     }
-
-                    @Override
-                    void success(List<User> result) {
-
-                    }
                 });
-
-        job.stop();
     }
 }
