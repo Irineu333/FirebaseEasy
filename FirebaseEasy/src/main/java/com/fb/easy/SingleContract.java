@@ -1,6 +1,6 @@
 package com.fb.easy;
 
-public interface GetContract {
+public interface SingleContract {
     <T> void getGeneric(final CallBack.Generic<T> callback);
 
     <T> void getListGeneric(final CallBack.ListGeneric<T> callback);

@@ -16,20 +16,5 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
-        //generic
-
-        Db.path("users").getListMap(
-                new CallBack.ListMap() {
-                    @Override
-                    void success(List<Map<String, Object>> result) {
-                        Log.d("result", String.valueOf(result));
-                    }
-
-                    @Override
-                    void error(Throwable throwable) {
-                        Log.e("result", throwable.getMessage(), throwable);
-                    }
-                });
     }
 }

@@ -1,7 +1,9 @@
 package com.fb.easy;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -17,7 +19,7 @@ import java.util.Map;
 public final class DbUtils {
 
     @SuppressWarnings("unchecked")
-    private static <T> T parserToGeneric(DataSnapshot dataSnapshot, Class<T> clazz) throws Exception {
+     static <T> T parserToGeneric(DataSnapshot dataSnapshot, Class<T> clazz) throws Exception {
         if (clazz == JSONObject.class) {
             return (T) new JSONObject(String.valueOf(dataSnapshot.getValue()));
         }
@@ -34,7 +36,7 @@ public final class DbUtils {
     }
 
     @NonNull
-    static <T> ValueEventListener getGenericEvent(@NonNull final CallBack.Generic<T> listener) {
+    static <T> ValueEventListener getEvent(@NonNull final CallBack.Generic<T> listener) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -53,45 +55,60 @@ public final class DbUtils {
     }
 
     @NonNull
-    @SuppressWarnings("unchecked")
-    static ValueEventListener getListMapEvent(@NonNull final CallBack.ListMap callback) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<Map<String, Object>> result = new ArrayList<>();
+    static  <T> ChildEventListener getListChildEvent(@NonNull final CallBack.ListGeneric<T> listener) {
+        return new ChildEventListener() {
 
-                for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    result.add((Map<String, Object>) child.getValue());
+            private final Map<String, T> list = new HashMap<>();
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                try {
+                    list.put(dataSnapshot.getKey(), DbUtils.parserToGeneric(dataSnapshot, listener.clazz));
+                    listener.success(new ArrayList<>(list.values()));
+                } catch (Exception e) {
+                    listener.error(e);
                 }
+            }
 
-                callback.success(result);
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                try {
+                    list.put(dataSnapshot.getKey(), DbUtils.parserToGeneric(dataSnapshot, listener.clazz));
+                    listener.success(new ArrayList<>(list.values()));
+                } catch (Exception e) {
+                    listener.error(e);
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                try {
+                    list.remove(dataSnapshot.getKey());
+                    listener.success(new ArrayList<>(list.values()));
+                } catch (Exception e) {
+                    listener.error(e);
+                }
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                try {
+                    list.put(dataSnapshot.getKey(), DbUtils.parserToGeneric(dataSnapshot, listener.clazz));
+                    listener.success(new ArrayList<>(list.values()));
+                } catch (Exception e) {
+                    listener.error(e);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.error(databaseError.toException());
+                listener.error(databaseError.toException());
             }
         };
     }
 
     @NonNull
-    @SuppressWarnings("unchecked")
-    static ValueEventListener getMapEvent(@NonNull final CallBack.Map callback) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                callback.success((Map<String, Object>) dataSnapshot.getValue());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.error(databaseError.toException());
-            }
-        };
-    }
-
-    @NonNull
-    static <T> ValueEventListener getListGenericEvent(@NonNull final CallBack.ListGeneric<T> callback) {
+    static <T> ValueEventListener getListEvent(@NonNull final CallBack.ListGeneric<T> callback) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -114,4 +131,5 @@ public final class DbUtils {
             }
         };
     }
+
 }

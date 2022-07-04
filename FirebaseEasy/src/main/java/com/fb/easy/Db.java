@@ -1,10 +1,11 @@
 package com.fb.easy;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-public final class Db implements GetContract, ListenerContract {
+public final class Db {
 
     //static fields
 
@@ -13,6 +14,9 @@ public final class Db implements GetContract, ListenerContract {
     //instance fields
 
     private final DatabaseReference ref;
+
+    public final Single SINGLE = new Single();
+    public final Listener LISTENER = new Listener();
 
     //constructors
 
@@ -28,143 +32,187 @@ public final class Db implements GetContract, ListenerContract {
 
     //instance methods
 
-    //get
+    class Single implements SingleContract {
+        @Override
+        public <T> void getGeneric(final CallBack.Generic<T> callback) {
+            ref.addListenerForSingleValueEvent(DbUtils.getEvent(callback));
+        }
 
-    @Override
-    public <T> void getGeneric(final CallBack.Generic<T> callback) {
-        ref.addListenerForSingleValueEvent(DbUtils.getGenericEvent(callback));
+        @Override
+        public <T> void getListGeneric(final CallBack.ListGeneric<T> callback) {
+            ref.addListenerForSingleValueEvent(DbUtils.getListEvent(callback));
+        }
+
+        @Override
+        public void getMap(final CallBack.Map callback) {
+            getGeneric(callback);
+        }
+
+        @Override
+        public void getListMap(final CallBack.ListMap callback) {
+            getListGeneric(callback);
+        }
+
+        @Override
+        public void getString(CallBack.String callback) {
+            getGeneric(callback);
+        }
+
+        @Override
+        public void getListString(CallBack.ListString callback) {
+            getListGeneric(callback);
+        }
+
+        @Override
+        public void getDouble(CallBack.Double callback) {
+            getGeneric(callback);
+        }
+
+        @Override
+        public void getListDouble(CallBack.ListDouble callback) {
+            getListGeneric(callback);
+        }
+
+        @Override
+        public void getLong(CallBack.Long callback) {
+            getGeneric(callback);
+        }
+
+        @Override
+        public void getListLong(CallBack.ListLong callback) {
+            getListGeneric(callback);
+        }
+
+        @Override
+        public void getBoolean(CallBack.Boolean callback) {
+            getGeneric(callback);
+        }
+
+        @Override
+        public void getListBoolean(CallBack.ListBoolean callback) {
+            getListGeneric(callback);
+        }
     }
 
-    @Override
-    public <T> void getListGeneric(final CallBack.ListGeneric<T> callback) {
-        ref.addListenerForSingleValueEvent(DbUtils.getListGenericEvent(callback));
-    }
+    class Listener implements ListenerListContract, ListenerContract {
 
-    @Override
-    public void getMap(final CallBack.Map callback) {
-        getGeneric(callback);
-    }
+        public final ChildrenListener CHILDREN = new ChildrenListener();
 
-    @Override
-    public void getListMap(final CallBack.ListMap callback) {
-        getListGeneric(callback);
-    }
+        @Override
+        public <T> Job getGeneric(final CallBack.Generic<T> listener) {
+            final ValueEventListener valueEventListener =
+                    ref.addValueEventListener(DbUtils.getEvent(listener));
 
-    @Override
-    public void getString(CallBack.String callback) {
-        getGeneric(callback);
-    }
+            return new Job() {
+                @Override
+                public void stop() {
+                    ref.removeEventListener(valueEventListener);
+                }
+            };
+        }
 
-    @Override
-    public void getListString(CallBack.ListString callback) {
-        getListGeneric(callback);
-    }
+        @Override
+        public <T> Job getListGeneric(CallBack.ListGeneric<T> listener) {
+            final ValueEventListener valueEventListener =
+                    ref.addValueEventListener(DbUtils.getListEvent(listener));
 
-    @Override
-    public void getDouble(CallBack.Double callback) {
-        getGeneric(callback);
-    }
+            return new Job() {
+                @Override
+                public void stop() {
+                    ref.removeEventListener(valueEventListener);
+                }
+            };
+        }
 
-    @Override
-    public void getListDouble(CallBack.ListDouble callback) {
-        getListGeneric(callback);
-    }
+        @Override
+        public Job getMap(CallBack.Map listener) {
+            return getGeneric(listener);
+        }
 
-    @Override
-    public void getLong(CallBack.Long callback) {
-        getGeneric(callback);
-    }
+        @Override
+        public Job getListMap(CallBack.ListMap listener) {
+            return getListGeneric(listener);
+        }
 
-    @Override
-    public void getListLong(CallBack.ListLong callback) {
-        getListGeneric(callback);
-    }
+        @Override
+        public Job getString(CallBack.String listener) {
+            return getGeneric(listener);
+        }
 
-    @Override
-    public void getBoolean(CallBack.Boolean callback) {
-        getGeneric(callback);
-    }
+        @Override
+        public Job getListString(CallBack.ListString listener) {
+            return getListGeneric(listener);
+        }
 
-    @Override
-    public void getListBoolean(CallBack.ListBoolean callback) {
-        getListGeneric(callback);
-    }
+        @Override
+        public Job getDouble(CallBack.Double listener) {
+            return getGeneric(listener);
+        }
 
-    //listener
+        @Override
+        public Job getListDouble(CallBack.ListDouble listener) {
+            return getListGeneric(listener);
+        }
 
-    @Override
-    public <T> Job listenerGeneric(final CallBack.Generic<T> listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getGenericEvent(listener));
+        @Override
+        public Job getLong(CallBack.Long listener) {
+            return getGeneric(listener);
+        }
 
-        return new Job() {
+        @Override
+        public Job getListLong(CallBack.ListLong listener) {
+            return getListGeneric(listener);
+        }
+
+        @Override
+        public Job getBoolean(CallBack.Boolean listener) {
+            return getGeneric(listener);
+        }
+
+        @Override
+        public Job getListBoolean(CallBack.ListBoolean listener) {
+            return getListGeneric(listener);
+        }
+
+        class ChildrenListener implements ListenerListContract {
+
             @Override
-            public void stop() {
-                ref.removeEventListener(valueEventListener);
+            public <T> Job getListGeneric(CallBack.ListGeneric<T> listener) {
+                final ChildEventListener valueEventListener =
+                        ref.addChildEventListener(DbUtils.getListChildEvent(listener));
+
+                return new Job() {
+                    @Override
+                    public void stop() {
+                        ref.removeEventListener(valueEventListener);
+                    }
+                };
             }
-        };
-    }
 
-    @Override
-    public <T> Job listenerListGeneric(CallBack.ListGeneric<T> listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getListGenericEvent(listener));
-
-        return new Job() {
             @Override
-            public void stop() {
-                ref.removeEventListener(valueEventListener);
+            public Job getListMap(CallBack.ListMap listener) {
+                return getListGeneric(listener);
             }
-        };
-    }
 
-    @Override
-    public Job listenerMap(CallBack.Map listener) {
-        return listenerGeneric(listener);
-    }
+            @Override
+            public Job getListString(CallBack.ListString listener) {
+                return getListGeneric(listener);
+            }
 
-    @Override
-    public Job listenerListMap(CallBack.ListMap listener) {
-        return listenerListGeneric(listener);
-    }
+            @Override
+            public Job getListDouble(CallBack.ListDouble listener) {
+                return getListGeneric(listener);
+            }
 
-    @Override
-    public Job listenerString(CallBack.Map listener) {
-        return listenerGeneric(listener);
-    }
+            @Override
+            public Job getListLong(CallBack.ListLong listener) {
+                return getListGeneric(listener);
+            }
 
-    @Override
-    public Job listenerListString(CallBack.ListMap listener) {
-        return listenerListGeneric(listener);
-    }
-
-    @Override
-    public Job listenerDouble(CallBack.Map listener) {
-        return listenerGeneric(listener);
-    }
-
-    @Override
-    public Job listenerListDouble(CallBack.ListMap listener) {
-        return listenerListGeneric(listener);
-    }
-
-    @Override
-    public Job listenerLong(CallBack.Map listener) {
-        return listenerGeneric(listener);
-    }
-
-    @Override
-    public Job listenerListLong(CallBack.ListMap listener) {
-        return listenerListGeneric(listener);
-    }
-
-    @Override
-    public Job listenerBoolean(CallBack.Map listener) {
-        return listenerGeneric(listener);
-    }
-
-    @Override
-    public Job listenerListBoolean(CallBack.ListMap listener) {
-        return listenerListGeneric(listener);
+            @Override
+            public Job getListBoolean(CallBack.ListBoolean listener) {
+                return getListGeneric(listener);
+            }
+        }
     }
 }
