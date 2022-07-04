@@ -42,12 +42,52 @@ public final class Db implements GetContract, ListenerContract {
 
     @Override
     public void getMap(final CallBack.Map callback) {
-        ref.addListenerForSingleValueEvent(DbUtils.getMapEvent(callback));
+        getGeneric(callback);
     }
 
     @Override
     public void getListMap(final CallBack.ListMap callback) {
-        ref.addListenerForSingleValueEvent(DbUtils.getListMapEvent(callback));
+        getListGeneric(callback);
+    }
+
+    @Override
+    public void getString(CallBack.String callback) {
+        getGeneric(callback);
+    }
+
+    @Override
+    public void getListString(CallBack.ListString callback) {
+        getListGeneric(callback);
+    }
+
+    @Override
+    public void getDouble(CallBack.Double callback) {
+        getGeneric(callback);
+    }
+
+    @Override
+    public void getListDouble(CallBack.ListDouble callback) {
+        getListGeneric(callback);
+    }
+
+    @Override
+    public void getLong(CallBack.Long callback) {
+        getGeneric(callback);
+    }
+
+    @Override
+    public void getListLong(CallBack.ListLong callback) {
+        getListGeneric(callback);
+    }
+
+    @Override
+    public void getBoolean(CallBack.Boolean callback) {
+        getGeneric(callback);
+    }
+
+    @Override
+    public void getListBoolean(CallBack.ListBoolean callback) {
+        getListGeneric(callback);
     }
 
     //listener
@@ -80,27 +120,51 @@ public final class Db implements GetContract, ListenerContract {
 
     @Override
     public Job listenerMap(CallBack.Map listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getMapEvent(listener));
-
-        return new Job() {
-            @Override
-            public void stop() {
-                ref.removeEventListener(valueEventListener);
-            }
-        };
+        return listenerGeneric(listener);
     }
 
     @Override
     public Job listenerListMap(CallBack.ListMap listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getListMapEvent(listener));
+        return listenerListGeneric(listener);
+    }
 
-        return new Job() {
-            @Override
-            public void stop() {
-                ref.removeEventListener(valueEventListener);
-            }
-        };
+    @Override
+    public Job listenerString(CallBack.Map listener) {
+        return listenerGeneric(listener);
+    }
+
+    @Override
+    public Job listenerListString(CallBack.ListMap listener) {
+        return listenerListGeneric(listener);
+    }
+
+    @Override
+    public Job listenerDouble(CallBack.Map listener) {
+        return listenerGeneric(listener);
+    }
+
+    @Override
+    public Job listenerListDouble(CallBack.ListMap listener) {
+        return listenerListGeneric(listener);
+    }
+
+    @Override
+    public Job listenerLong(CallBack.Map listener) {
+        return listenerGeneric(listener);
+    }
+
+    @Override
+    public Job listenerListLong(CallBack.ListMap listener) {
+        return listenerListGeneric(listener);
+    }
+
+    @Override
+    public Job listenerBoolean(CallBack.Map listener) {
+        return listenerGeneric(listener);
+    }
+
+    @Override
+    public Job listenerListBoolean(CallBack.ListMap listener) {
+        return listenerListGeneric(listener);
     }
 }

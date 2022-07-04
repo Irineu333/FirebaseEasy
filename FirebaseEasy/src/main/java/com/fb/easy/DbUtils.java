@@ -10,11 +10,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class DbUtils {
-
 
     @SuppressWarnings("unchecked")
     private static <T> T parserToGeneric(DataSnapshot dataSnapshot, Class<T> clazz) throws Exception {
@@ -25,6 +25,11 @@ public final class DbUtils {
         if (clazz == JSONArray.class) {
             return (T) new JSONObject(String.valueOf(dataSnapshot.getValue()));
         }
+
+        if (clazz == HashMap.class) {
+            return (T) dataSnapshot.getValue();
+        }
+
         return dataSnapshot.getValue(clazz);
     }
 

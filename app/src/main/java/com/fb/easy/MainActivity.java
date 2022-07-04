@@ -5,6 +5,7 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     void error(Throwable throwable) {
-
+                        Log.e("result", throwable.getMessage(), throwable);
                     }
                 });
     }

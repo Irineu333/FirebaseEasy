@@ -2,8 +2,9 @@ package com.fb.easy;
 
 import androidx.annotation.NonNull;
 
+import com.google.firebase.database.GenericTypeIndicator;
+
 import java.util.HashMap;
-import java.util.List;
 
 public final class CallBack {
 
@@ -54,14 +55,14 @@ public final class CallBack {
     }
 
     @SuppressWarnings("unchecked")
-    abstract static class ListMap extends Generic<List<java.util.Map<java.lang.String, Object>>> {
+    abstract static class ListMap extends ListGeneric<java.util.Map<java.lang.String, Object>> {
         public ListMap() {
-            super((Class<List<java.util.Map<java.lang.String, Object>>>) getListClass());
+            super((Class<java.util.Map<java.lang.String, Object>>) getMapClass());
         }
 
         @NonNull
-        private static Class<?> getListClass() {
-            return List.class;
+        private static Class<?> getMapClass() {
+            return HashMap.class;
         }
     }
 
