@@ -1,4 +1,6 @@
-package com.fb.easy;
+package com.fb.easy.contract;
+
+import com.fb.easy.core.CallBack;
 
 public interface SingleContract {
     <T> void getGeneric(final CallBack.Generic<T> callback);

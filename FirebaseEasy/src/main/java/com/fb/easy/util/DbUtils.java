@@ -1,8 +1,9 @@
-package com.fb.easy;
+package com.fb.easy.util;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.fb.easy.core.CallBack;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,7 +20,7 @@ import java.util.Map;
 public final class DbUtils {
 
     @SuppressWarnings("unchecked")
-     static <T> T parserToGeneric(DataSnapshot dataSnapshot, Class<T> clazz) throws Exception {
+    static <T> T parserToGeneric(DataSnapshot dataSnapshot, Class<T> clazz) throws Exception {
         if (clazz == JSONObject.class) {
             return (T) new JSONObject(String.valueOf(dataSnapshot.getValue()));
         }
@@ -36,7 +37,7 @@ public final class DbUtils {
     }
 
     @NonNull
-    static <T> ValueEventListener getEvent(@NonNull final CallBack.Generic<T> listener) {
+    public static <T> ValueEventListener getEvent(@NonNull final CallBack.Generic<T> listener) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -55,7 +56,7 @@ public final class DbUtils {
     }
 
     @NonNull
-    static  <T> ChildEventListener getListChildEvent(@NonNull final CallBack.ListGeneric<T> listener) {
+    public static <T> ChildEventListener getListChildEvent(@NonNull final CallBack.ListGeneric<T> listener) {
         return new ChildEventListener() {
 
             private final Map<String, T> list = new HashMap<>();
@@ -108,7 +109,7 @@ public final class DbUtils {
     }
 
     @NonNull
-    static <T> ValueEventListener getListEvent(@NonNull final CallBack.ListGeneric<T> callback) {
+    public static <T> ValueEventListener getListEvent(@NonNull final CallBack.ListGeneric<T> callback) {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

@@ -1,4 +1,7 @@
-package com.fb.easy;
+package com.fb.easy.contract;
+
+import com.fb.easy.core.CallBack;
+import com.fb.easy.core.Job;
 
 public interface ListenerContract {
     <T> Job getGeneric(final CallBack.Generic<T> listener);
