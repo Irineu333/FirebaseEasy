@@ -18,11 +18,11 @@ import java.util.Map;
 
 public final class DbUtils {
 
-    static <T> T parserToGeneric(DataSnapshot dataSnapshot, TypeToken<T> typeToken) {
+    public static <T> T parserToGeneric(Object data, TypeToken<T> typeToken) {
 
         Gson gson = new Gson();
 
-        String json = gson.toJson(dataSnapshot.getValue());
+        String json = gson.toJson(data);
 
         return gson.fromJson(json, typeToken.getType());
     }
@@ -34,7 +34,7 @@ public final class DbUtils {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listener.success(
                         parserToGeneric(
-                                dataSnapshot,
+                                dataSnapshot.getValue(),
                                 listener.typeToken
                         )
                 );
@@ -57,9 +57,10 @@ public final class DbUtils {
                 list.put(
                         dataSnapshot.getKey(),
                         DbUtils.parserToGeneric(
-                                dataSnapshot,
+                                dataSnapshot.getValue(),
                                 listener.typeToken
-                        ));
+                        )
+                );
             }
 
             private void updated() {
@@ -105,7 +106,12 @@ public final class DbUtils {
                 List<T> result = new ArrayList<>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    result.add(parserToGeneric(child, callback.typeToken));
+                    result.add(
+                            parserToGeneric(
+                                    child.getValue(),
+                                    callback.typeToken
+                            )
+                    );
                 }
 
                 callback.success(result);

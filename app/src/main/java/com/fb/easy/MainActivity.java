@@ -1,15 +1,11 @@
 package com.fb.easy;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.fb.easy.core.CallBack;
 
-import org.json.JSONObject;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,17 +17,18 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Db.path("users").SINGLE.getGeneric(
-                new CallBack.Map() {
+        Db.path("users").LISTENER.CHILDREN.getListMap(
+                new CallBack.ListMap() {
                     @Override
-                    public void success(Map<String, Object> result) {
-                        Log.d("result", String.valueOf(result));
+                    public void success(List<Map<String, Object>> result) {
+
                     }
 
                     @Override
                     public void error(Throwable throwable) {
-                        Log.e("result", throwable.getMessage(), throwable);
+
                     }
-                });
+                }
+        );
     }
 }
