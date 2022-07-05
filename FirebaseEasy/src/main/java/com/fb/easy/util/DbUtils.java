@@ -8,9 +8,8 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,21 +18,13 @@ import java.util.Map;
 
 public final class DbUtils {
 
-    @SuppressWarnings("unchecked")
-    static <T> T parserToGeneric(DataSnapshot dataSnapshot, Class<T> clazz) throws Exception {
-        if (clazz == JSONObject.class) {
-            return (T) new JSONObject(String.valueOf(dataSnapshot.getValue()));
-        }
+    static <T> T parserToGeneric(DataSnapshot dataSnapshot, TypeToken<T> typeToken) {
 
-        if (clazz == JSONArray.class) {
-            return (T) new JSONObject(String.valueOf(dataSnapshot.getValue()));
-        }
+        Gson gson = new Gson();
 
-        if (clazz == HashMap.class) {
-            return (T) dataSnapshot.getValue();
-        }
+        String json = gson.toJson(dataSnapshot.getValue());
 
-        return dataSnapshot.getValue(clazz);
+        return gson.fromJson(json, typeToken.getType());
     }
 
     @NonNull
@@ -41,11 +32,12 @@ public final class DbUtils {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    listener.success(parserToGeneric(dataSnapshot, listener.clazz));
-                } catch (Exception e) {
-                    listener.error(e);
-                }
+                listener.success(
+                        parserToGeneric(
+                                dataSnapshot,
+                                listener.typeToken
+                        )
+                );
             }
 
             @Override
@@ -61,44 +53,41 @@ public final class DbUtils {
 
             private final Map<String, T> list = new HashMap<>();
 
+            private void put(@NonNull DataSnapshot dataSnapshot) {
+                list.put(
+                        dataSnapshot.getKey(),
+                        DbUtils.parserToGeneric(
+                                dataSnapshot,
+                                listener.typeToken
+                        ));
+            }
+
+            private void updated() {
+                listener.success(new ArrayList<>(list.values()));
+            }
+
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                try {
-                    list.put(dataSnapshot.getKey(), DbUtils.parserToGeneric(dataSnapshot, listener.clazz));
-                    listener.success(new ArrayList<>(list.values()));
-                } catch (Exception e) {
-                    listener.error(e);
-                }
+
+                put(dataSnapshot);
+                updated();
+
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                try {
-                    list.put(dataSnapshot.getKey(), DbUtils.parserToGeneric(dataSnapshot, listener.clazz));
-                    listener.success(new ArrayList<>(list.values()));
-                } catch (Exception e) {
-                    listener.error(e);
-                }
+                put(dataSnapshot);
+                updated();
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    list.remove(dataSnapshot.getKey());
-                    listener.success(new ArrayList<>(list.values()));
-                } catch (Exception e) {
-                    listener.error(e);
-                }
+                list.remove(dataSnapshot.getKey());
+                updated();
             }
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                try {
-                    list.put(dataSnapshot.getKey(), DbUtils.parserToGeneric(dataSnapshot, listener.clazz));
-                    listener.success(new ArrayList<>(list.values()));
-                } catch (Exception e) {
-                    listener.error(e);
-                }
             }
 
             @Override
@@ -113,17 +102,13 @@ public final class DbUtils {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                try {
-                    List<T> result = new ArrayList<>();
+                List<T> result = new ArrayList<>();
 
-                    for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        result.add(parserToGeneric(child, callback.clazz));
-                    }
-
-                    callback.success(result);
-                } catch (Exception e) {
-                    callback.error(e);
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    result.add(parserToGeneric(child, callback.typeToken));
                 }
+
+                callback.success(result);
             }
 
             @Override
