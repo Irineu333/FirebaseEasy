@@ -1,4 +1,4 @@
-package com.fb.easy.core;
+package com.fb.easy.contract;
 
 public interface Job {
     void stop();

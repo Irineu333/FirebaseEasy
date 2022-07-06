@@ -1,4 +1,4 @@
-package com.fb.easy.core;
+package com.fb.easy.callback;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -26,7 +26,6 @@ public final class Listener {
         };
 
         public abstract void error(Throwable throwable);
-
 
         public void success(java.util.List<T> result) {
             //not implemented

@@ -1,8 +1,8 @@
 package com.fb.easy;
 
-import com.fb.easy.core.Job;
-import com.fb.easy.core.Listener;
-import com.fb.easy.core.Single;
+import com.fb.easy.contract.Job;
+import com.fb.easy.callback.Listener;
+import com.fb.easy.callback.Single;
 import com.fb.easy.util.DbUtils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;

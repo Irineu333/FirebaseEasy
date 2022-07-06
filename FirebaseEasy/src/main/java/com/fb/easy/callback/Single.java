@@ -1,4 +1,4 @@
-package com.fb.easy.core;
+package com.fb.easy.callback;
 
 import com.google.gson.reflect.TypeToken;
 
