@@ -2,9 +2,9 @@ package com.fb.easy.core;
 
 import com.google.gson.reflect.TypeToken;
 
-public final class CallBack {
+public final class Single {
 
-    private CallBack() {
+    private Single() {
         //sealed class
     }
 
@@ -12,7 +12,8 @@ public final class CallBack {
 
     public abstract static class Generic<T> {
 
-        public final TypeToken<T> typeToken = new TypeToken<T>() {};
+        public final TypeToken<T> typeToken = new TypeToken<T>() {
+        };
 
         public abstract void error(Throwable throwable);
 
@@ -21,11 +22,18 @@ public final class CallBack {
 
     public abstract static class ListGeneric<T> {
 
-        public final TypeToken<T> typeToken = new TypeToken<T>() {};
+        public final TypeToken<T> typeToken = new TypeToken<T>() {
+        };
 
         public abstract void error(Throwable throwable);
 
-        public abstract void success(java.util.List<T> result);
+        public void success(java.util.List<T> result) {
+            //not implemented
+        }
+
+        public void onAdded(T result, java.lang.String key) {
+            //not implemented
+        }
     }
 
     //sketchware

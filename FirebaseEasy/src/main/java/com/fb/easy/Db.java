@@ -1,12 +1,14 @@
 package com.fb.easy;
 
-import com.fb.easy.core.CallBack;
 import com.fb.easy.core.Job;
+import com.fb.easy.core.Listener;
+import com.fb.easy.core.Single;
 import com.fb.easy.util.DbUtils;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.Map;
@@ -21,9 +23,6 @@ public final class Db {
     //instance fields
 
     private final DatabaseReference ref;
-
-    public final Single SINGLE = new Single();
-    public final Listener LISTENER = new Listener();
 
     //constructors
 
@@ -57,7 +56,9 @@ public final class Db {
 
     public void update(Object map) {
         ref.updateChildren(
-                DbUtils.parserToGeneric(map,
+                DbUtils.parserToGeneric(
+                        map,
+                        new Gson(),
                         new TypeToken<Map<String, Object>>() {
                         }
                 )
@@ -70,59 +71,51 @@ public final class Db {
 
     //instance class
 
-    class Single {
-
-        public <T> void get(final CallBack.Generic<T> callback) {
-            ref.addListenerForSingleValueEvent(DbUtils.getEvent(callback));
-        }
-
-
-        public <T> void getList(final CallBack.ListGeneric<T> callback) {
-            ref.addListenerForSingleValueEvent(DbUtils.getListEvent(callback));
-        }
+    public <T> void get(Single.Generic<T> callback) {
+        ref.addListenerForSingleValueEvent(DbUtils.getEvent(callback));
     }
 
-    class Listener {
 
-        public final ChildrenListener CHILDREN = new ChildrenListener();
+    public <T> void get(Single.ListGeneric<T> callback) {
+        ref.addListenerForSingleValueEvent(DbUtils.getListEvent(callback));
+    }
 
-        public <T> Job get(final CallBack.Generic<T> listener) {
-            final ValueEventListener valueEventListener =
-                    ref.addValueEventListener(DbUtils.getEvent(listener));
+    //listener
 
-            return new Job() {
-                @Override
-                public void stop() {
-                    ref.removeEventListener(valueEventListener);
-                }
-            };
-        }
+    public <T> Job get(Listener.Generic<T> listener) {
+        final ValueEventListener valueEventListener =
+                ref.addValueEventListener(DbUtils.getEvent(listener));
 
-        public <T> Job getList(CallBack.ListGeneric<T> listener) {
-            final ValueEventListener valueEventListener =
-                    ref.addValueEventListener(DbUtils.getListEvent(listener));
-
-            return new Job() {
-                @Override
-                public void stop() {
-                    ref.removeEventListener(valueEventListener);
-                }
-            };
-        }
-
-        class ChildrenListener {
-
-            public <T> Job getList(CallBack.ListGeneric<T> listener) {
-                final ChildEventListener valueEventListener =
-                        ref.addChildEventListener(DbUtils.getListChildEvent(listener));
-
-                return new Job() {
-                    @Override
-                    public void stop() {
-                        ref.removeEventListener(valueEventListener);
-                    }
-                };
+        return new Job() {
+            @Override
+            public void stop() {
+                ref.removeEventListener(valueEventListener);
             }
-        }
+        };
+    }
+
+    public <T> Job get(Listener.ListGeneric<T> listener) {
+        final ValueEventListener valueEventListener =
+                ref.addValueEventListener(DbUtils.getListEvent(listener));
+
+        return new Job() {
+            @Override
+            public void stop() {
+                ref.removeEventListener(valueEventListener);
+            }
+        };
+    }
+
+    //children listener
+    public <T> Job get(Listener.Children.ListGeneric<T> listener) {
+        final ChildEventListener valueEventListener =
+                ref.addChildEventListener(DbUtils.getListEvent(listener));
+
+        return new Job() {
+            @Override
+            public void stop() {
+                ref.removeEventListener(valueEventListener);
+            }
+        };
     }
 }

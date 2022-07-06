@@ -3,7 +3,8 @@ package com.fb.easy.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fb.easy.core.CallBack;
+import com.fb.easy.core.Listener;
+import com.fb.easy.core.Single;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,15 +13,16 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class DbUtils {
 
-    public static <T> T parserToGeneric(Object data, TypeToken<T> typeToken) {
-
-        Gson gson = new Gson();
+    @NonNull
+    public static <T> T parserToGeneric(
+            @Nullable Object data,
+            @NonNull Gson gson,
+            @NonNull TypeToken<T> typeToken
+    ) {
 
         String json = gson.toJson(data);
 
@@ -28,13 +30,18 @@ public final class DbUtils {
     }
 
     @NonNull
-    public static <T> ValueEventListener getEvent(@NonNull final CallBack.Generic<T> listener) {
+    public static <T> ValueEventListener getEvent(@NonNull final Single.Generic<T> listener) {
+
         return new ValueEventListener() {
+
+            private final Gson gson = new Gson();
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 listener.success(
                         parserToGeneric(
                                 dataSnapshot.getValue(),
+                                gson,
                                 listener.typeToken
                         )
                 );
@@ -48,70 +55,51 @@ public final class DbUtils {
     }
 
     @NonNull
-    public static <T> ChildEventListener getListChildEvent(@NonNull final CallBack.ListGeneric<T> listener) {
-        return new ChildEventListener() {
+    public static <T> ValueEventListener getEvent(@NonNull final Listener.Generic<T> listener) {
 
-            private final Map<String, T> list = new HashMap<>();
-
-            private void put(@NonNull DataSnapshot dataSnapshot) {
-                list.put(
-                        dataSnapshot.getKey(),
-                        DbUtils.parserToGeneric(
-                                dataSnapshot.getValue(),
-                                listener.typeToken
-                        )
-                );
-            }
-
-            private void updated() {
-                listener.success(new ArrayList<>(list.values()));
-            }
-
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                put(dataSnapshot);
-                updated();
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                put(dataSnapshot);
-                updated();
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                list.remove(dataSnapshot.getKey());
-                updated();
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                listener.error(databaseError.toException());
-            }
-        };
-    }
-
-    @NonNull
-    public static <T> ValueEventListener getListEvent(@NonNull final CallBack.ListGeneric<T> callback) {
         return new ValueEventListener() {
+
+            private final Gson gson = new Gson();
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                listener.success(
+                        parserToGeneric(
+                                dataSnapshot.getValue(),
+                                gson,
+                                listener.typeToken
+                        )
+                );
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                listener.error(databaseError.toException());
+            }
+        };
+    }
+
+    @NonNull
+    public static <T> ValueEventListener getListEvent(@NonNull final Single.ListGeneric<T> callback) {
+        return new ValueEventListener() {
+
+            private final Gson gson = new Gson();
+
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<T> result = new ArrayList<>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
-                    result.add(
-                            parserToGeneric(
-                                    child.getValue(),
-                                    callback.typeToken
-                            )
+
+                    T value = parserToGeneric(
+                            child.getValue(),
+                            gson,
+                            callback.typeToken
                     );
+
+                    callback.onAdded(value, child.getKey());
+
+                    result.add(value);
                 }
 
                 callback.success(result);
@@ -124,4 +112,89 @@ public final class DbUtils {
         };
     }
 
+    @NonNull
+    public static <T> ValueEventListener getListEvent(@NonNull final Listener.ListGeneric<T> callback) {
+        return new ValueEventListener() {
+
+            private final Gson gson = new Gson();
+
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<T> result = new ArrayList<>();
+
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+
+                    T value = parserToGeneric(
+                            child.getValue(),
+                            gson,
+                            callback.typeToken
+                    );
+
+                    callback.onAdded(value, child.getKey());
+
+                    result.add(value);
+                }
+
+                callback.success(result);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.error(databaseError.toException());
+            }
+        };
+    }
+
+    @NonNull
+    public static <T> ChildEventListener getListEvent(@NonNull final Listener.Children.ListGeneric<T> listener) {
+        return new ChildEventListener() {
+
+            private final Gson gson = new Gson();
+
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                listener.onAdded(
+                        DbUtils.parserToGeneric(
+                                dataSnapshot.getValue(),
+                                gson,
+                                listener.typeToken
+                        ),
+                        dataSnapshot.getKey()
+                );
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                listener.onChange(
+                        DbUtils.parserToGeneric(
+                                dataSnapshot.getValue(),
+                                gson,
+                                listener.typeToken
+                        ),
+                        dataSnapshot.getKey()
+                );
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                listener.onRemoved(
+                        DbUtils.parserToGeneric(
+                                dataSnapshot.getValue(),
+                                gson,
+                                listener.typeToken
+                        ),
+                        dataSnapshot.getKey()
+                );
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                listener.error(databaseError.toException());
+            }
+        };
+    }
 }
