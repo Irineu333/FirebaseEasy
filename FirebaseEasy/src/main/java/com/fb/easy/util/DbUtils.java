@@ -38,7 +38,7 @@ public final class DbUtils {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listener.success(
+                listener.onResult(
                         parserToGeneric(
                                 dataSnapshot.getValue(),
                                 gson,
@@ -49,7 +49,7 @@ public final class DbUtils {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                listener.error(databaseError.toException());
+                listener.onFailure(databaseError.toException());
             }
         };
     }
@@ -63,7 +63,7 @@ public final class DbUtils {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listener.success(
+                listener.onResult(
                         parserToGeneric(
                                 dataSnapshot.getValue(),
                                 gson,
@@ -74,7 +74,7 @@ public final class DbUtils {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                listener.error(databaseError.toException());
+                listener.onFailure(databaseError.toException());
             }
         };
     }
@@ -102,12 +102,12 @@ public final class DbUtils {
                     result.add(value);
                 }
 
-                callback.result(result);
+                callback.onResult(result);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.error(databaseError.toException());
+                callback.onFailure(databaseError.toException());
             }
         };
     }
@@ -135,7 +135,7 @@ public final class DbUtils {
                     result.add(value);
                 }
 
-                callback.result(result);
+                callback.onResult(result);
             }
 
             @Override
@@ -193,7 +193,7 @@ public final class DbUtils {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                listener.error(databaseError.toException());
+                listener.onFailure(databaseError.toException());
             }
         };
     }

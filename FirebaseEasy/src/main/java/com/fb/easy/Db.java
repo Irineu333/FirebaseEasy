@@ -1,9 +1,15 @@
 package com.fb.easy;
 
-import com.fb.easy.contract.Job;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.fb.easy.callback.Listener;
+import com.fb.easy.callback.Result;
 import com.fb.easy.callback.Single;
+import com.fb.easy.contract.Job;
 import com.fb.easy.util.DbUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -51,10 +57,32 @@ public final class Db {
     }
 
     public void set(Object value) {
-        ref.setValue(value);
+        set(value, null);
     }
 
-    public void update(Object map) {
+    public void set(@Nullable Object value, @Nullable final Result.Set result) {
+        ref.setValue(value).addOnCompleteListener(
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (result == null) return;
+
+                        if (task.isSuccessful()) {
+                            result.onSuccess();
+                        } else {
+                            result.onFailure(task.getException());
+                        }
+                    }
+                }
+        );
+    }
+
+    public void update(@NonNull Object map) {
+        update(map, null);
+    }
+
+    public void update(@NonNull Object map, @Nullable final Result.Update result) {
         ref.updateChildren(
                 DbUtils.parserToGeneric(
                         map,
@@ -62,11 +90,46 @@ public final class Db {
                         new TypeToken<Map<String, Object>>() {
                         }
                 )
+        ).addOnCompleteListener(
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (result == null) return;
+
+                        if (task.isSuccessful()) {
+                            result.onSuccess();
+                        } else {
+                            result.onFailure(task.getException());
+                        }
+                    }
+                }
         );
     }
 
     public void post(Object value) {
-        new Db(ref.push()).set(value);
+        post(value, null);
+    }
+
+    public void post(Object value, @Nullable final Result.Post result) {
+
+        if (value == null) throw new IllegalArgumentException("value cannot be null");
+
+        final DatabaseReference push = ref.push();
+
+        push.setValue(value).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (result == null) return;
+
+                if (task.isSuccessful()) {
+                    result.onSuccess();
+                    result.onSuccess(push.getKey());
+                } else {
+                    result.onFailure(task.getException());
+                }
+            }
+        });
     }
 
     //instance class

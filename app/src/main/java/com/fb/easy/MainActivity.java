@@ -1,14 +1,12 @@
 package com.fb.easy;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.util.ArrayMap;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fb.easy.callback.Listener;
-import com.fb.easy.callback.Single;
+import com.fb.easy.callback.Result;
 
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,15 +17,18 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Db.path("users").get(new Single.ListMap() {
+        Map<String, Object> map = new ArrayMap<>();
 
+        map.put("name", "Aderson");
+
+        Db.path("users").post(map, new Result.Post() {
             @Override
-            public void result(List<Map<String, Object>> result) {
-                Log.d("result", String.valueOf(result));
+            public void onSuccess(String key) {
+
             }
 
             @Override
-            public void error(Throwable throwable) {
+            public void onFailure(Exception exception) {
 
             }
         });

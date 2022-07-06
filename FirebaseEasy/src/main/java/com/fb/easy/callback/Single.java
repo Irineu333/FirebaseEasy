@@ -15,9 +15,9 @@ public final class Single {
         public final TypeToken<T> typeToken = new TypeToken<T>() {
         };
 
-        public abstract void error(Throwable throwable);
+        public abstract void onFailure(Throwable throwable);
 
-        public abstract void success(T result);
+        public abstract void onResult(T result);
     }
 
     public abstract static class ListGeneric<T> {
@@ -25,9 +25,9 @@ public final class Single {
         public final TypeToken<T> typeToken = new TypeToken<T>() {
         };
 
-        public abstract void error(Throwable throwable);
+        public abstract void onFailure(Throwable throwable);
 
-        public void result(java.util.List<T> result) {
+        public void onResult(java.util.List<T> result) {
             //not implemented
         }
 
