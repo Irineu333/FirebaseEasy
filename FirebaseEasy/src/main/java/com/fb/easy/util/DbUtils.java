@@ -102,7 +102,7 @@ public final class DbUtils {
                     result.add(value);
                 }
 
-                callback.success(result);
+                callback.result(result);
             }
 
             @Override
@@ -135,7 +135,7 @@ public final class DbUtils {
                     result.add(value);
                 }
 
-                callback.success(result);
+                callback.result(result);
             }
 
             @Override

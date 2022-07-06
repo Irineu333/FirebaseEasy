@@ -27,7 +27,7 @@ public final class Single {
 
         public abstract void error(Throwable throwable);
 
-        public void success(java.util.List<T> result) {
+        public void result(java.util.List<T> result) {
             //not implemented
         }
 

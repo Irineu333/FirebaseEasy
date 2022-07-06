@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         Db.path("users").get(new Single.ListMap() {
 
             @Override
-            public void success(List<Map<String, Object>> result) {
+            public void result(List<Map<String, Object>> result) {
                 Log.d("result", String.valueOf(result));
             }
 
