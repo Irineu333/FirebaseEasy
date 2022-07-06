@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Db.path("users").LISTENER.CHILDREN.getListMap(
+        Db.path("users").LISTENER.CHILDREN.getList(
                 new CallBack.ListMap() {
                     @Override
                     public void success(List<Map<String, Object>> result) {
