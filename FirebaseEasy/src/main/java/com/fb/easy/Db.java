@@ -32,17 +32,20 @@ public final class Db {
 
     //constructors
 
-    public Db(String path) {
+    public Db(@NonNull String path) {
         this(database.getReference(path));
     }
 
-    public Db(DatabaseReference ref) {
+    public Db(@NonNull DatabaseReference ref) {
+
+        if (ref == null) throw new IllegalArgumentException("ref cannot be null");
+
         this.ref = ref;
     }
 
     //static methods
 
-    public static Db path(String path) {
+    public static Db path(@NonNull String path) {
         return new Db(path);
     }
 
@@ -56,7 +59,7 @@ public final class Db {
         return ref.push().getKey();
     }
 
-    public void set(Object value) {
+    public void set(@Nullable Object value) {
         set(value, null);
     }
 
@@ -107,11 +110,11 @@ public final class Db {
         );
     }
 
-    public void post(Object value) {
+    public void post(@NonNull Object value) {
         post(value, null);
     }
 
-    public void post(Object value, @Nullable final Result.Post result) {
+    public void post(@NonNull Object value, @Nullable final Result.Post result) {
 
         if (value == null) throw new IllegalArgumentException("value cannot be null");
 
@@ -134,18 +137,18 @@ public final class Db {
 
     //instance class
 
-    public <T> void get(Single.Generic<T> callback) {
+    public <T> void get(@NonNull Single.Generic<T> callback) {
         ref.addListenerForSingleValueEvent(DbUtils.getEvent(callback));
     }
 
 
-    public <T> void get(Single.ListGeneric<T> callback) {
+    public <T> void get(@NonNull Single.ListGeneric<T> callback) {
         ref.addListenerForSingleValueEvent(DbUtils.getListEvent(callback));
     }
 
     //listener
 
-    public <T> Job get(Listener.Generic<T> listener) {
+    public <T> Job get(@NonNull Listener.Generic<T> listener) {
         final ValueEventListener valueEventListener =
                 ref.addValueEventListener(DbUtils.getEvent(listener));
 
@@ -157,7 +160,7 @@ public final class Db {
         };
     }
 
-    public <T> Job get(Listener.ListGeneric<T> listener) {
+    public <T> Job get(@NonNull Listener.ListGeneric<T> listener) {
         final ValueEventListener valueEventListener =
                 ref.addValueEventListener(DbUtils.getListEvent(listener));
 
@@ -170,7 +173,7 @@ public final class Db {
     }
 
     //children listener
-    public <T> Job get(Listener.Children.ListGeneric<T> listener) {
+    public <T> Job get(@NonNull Listener.Children.ListGeneric<T> listener) {
         final ChildEventListener valueEventListener =
                 ref.addChildEventListener(DbUtils.getListEvent(listener));
 
