@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "FirebaseEasy"
+rootProject.name = "FirebaseEasy Project"
 include ':app'
-include ':FirebaseEasy'
+include ':library'
