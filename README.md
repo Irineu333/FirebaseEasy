@@ -5,7 +5,7 @@ Para começar a utilizar a lib, obtenha uma intância da classe `Db`, por meio d
 
 ``` java
 // imports
-import com.fb.easy;
+import com.fb.easy.Db;
 
 // constructor
 Db db = new Db("path");
