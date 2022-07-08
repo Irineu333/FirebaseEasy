@@ -1,7 +1,7 @@
 # FirebaseEasy [![](https://jitpack.io/v/Irineu333/FirebaseEasy.svg)](https://jitpack.io/#Irineu333/FirebaseEasy)
 
 ## Instanciar
-Para começar a utilizar a lib, obtenha uma intância da classe Db, por meio do construtor `new Db("path")` ou pelo método `Db.path("path")`.
+Para começar a utilizar a lib, obtenha uma intância da classe `Db`, por meio do construtor `new Db("path")` ou pelo método `Db.path("path")`.
 
 ``` java
 // imports
@@ -30,7 +30,7 @@ db.child(String) : Db //obtém uma nova instância de `Db` no caminho especifica
 ```
 
 ## set
-Escrever um valor, substuindo todo o conteúdo do path. Opcionalmente você pode passar o callback `Result.Set` para tratar o resultado, sobrescrevendo `onSuccess` e  `onFailure(Exception)`. 
+Escreve um valor, substuindo todo o conteúdo do path. Opcionalmente você pode passar o callback `Result.Set` para tratar o resultado, sobrescrevendo `onSuccess` e  `onFailure(Exception)`. 
 ``` java
 // sem callback
 Db.path("version").set("1.0.0");
@@ -273,7 +273,7 @@ Db.path("users").get(new Listener.Children.ListMap() {
 ```
 
 ### job
-Os callbacks `Listener` e `Listener.Children` retornam um objeto do tipo `Job`que pode ser usado parar o listener.
+Os callbacks `Listener` e `Listener.Children` retornam um objeto do tipo `Job`que pode ser usado para parar o listener por meio do méotdo `stop()`.
 ``` java 
 
 // imports
