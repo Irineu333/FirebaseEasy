@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "254847213555",
+    "firebase_url": "https://test-81a49-default-rtdb.firebaseio.com",
+    "project_id": "test-81a49",
+    "storage_bucket": "test-81a49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254847213555:android:75b13768ad624b42277c86",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254847213555-0sul3r7uh253joj8ett96qha9oc0k74h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi0Su0Mw9kYqT9eNJV2cOUe10Ng4IITxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254847213555-0sul3r7uh253joj8ett96qha9oc0k74h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254847213555:android:44e277c4bc0a4baf277c86",
+        "android_client_info": {
+          "package_name": "com.fb.easy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254847213555-0sul3r7uh253joj8ett96qha9oc0k74h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi0Su0Mw9kYqT9eNJV2cOUe10Ng4IITxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254847213555-0sul3r7uh253joj8ett96qha9oc0k74h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:254847213555:android:46dd90827a3729b7277c86",
+        "android_client_info": {
+          "package_name": "com.neo.lib"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "254847213555-0sul3r7uh253joj8ett96qha9oc0k74h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDi0Su0Mw9kYqT9eNJV2cOUe10Ng4IITxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "254847213555-0sul3r7uh253joj8ett96qha9oc0k74h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

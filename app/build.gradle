@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.gms.google-services' version "4.3.13"
 }
 
 android {
@@ -29,8 +30,7 @@ android {
 
 dependencies {
 
-    implementation project(":FirebaseEasy")
-
+    implementation project(':library')
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
