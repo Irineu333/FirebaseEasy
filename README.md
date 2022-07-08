@@ -295,3 +295,14 @@ Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
 getUsersJob.stop();
 
 ```
+## Add to project
+
+Add the jitpack to project in build.gradle or settings.gradle (gradle 7+)
+``` groovy
+maven { url 'https://jitpack.io' }
+```
+
+Add the dependence to module (normally app)
+``` groovy
+implementation "com.github.Irineu333:FirebaseEasy:1.0.0"
+```
