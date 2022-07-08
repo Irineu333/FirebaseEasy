@@ -140,7 +140,7 @@ public final class DbUtils {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.error(databaseError.toException());
+                callback.onFailure(databaseError.toException());
             }
         };
     }
@@ -165,7 +165,7 @@ public final class DbUtils {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                listener.onChange(
+                listener.onChanged(
                         DbUtils.parserToGeneric(
                                 dataSnapshot.getValue(),
                                 gson,

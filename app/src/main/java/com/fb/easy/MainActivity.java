@@ -1,12 +1,15 @@
 package com.fb.easy;
 
 import android.os.Bundle;
-import android.util.ArrayMap;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fb.easy.callback.Result;
+import com.fb.easy.callback.Listener;
+import com.fb.easy.contract.Job;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -17,20 +20,19 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Map<String, Object> map = new ArrayMap<>();
+        Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
 
-        map.put("name", "Aderson");
-
-        Db.path("users").post(map, new Result.Post() {
             @Override
-            public void onSuccess(String key) {
-
+            public void onResult(List<Map<String, Object>> result) {
+                Log.d("result", String.valueOf(result));
             }
 
             @Override
-            public void onFailure(Exception exception) {
-
+            public void onFailure(Exception e) {
+                Log.e("error", e.getMessage(), e);
             }
         });
+
+        getUsersJob.stop();
     }
 }

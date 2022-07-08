@@ -15,7 +15,7 @@ public final class Listener {
         public final TypeToken<T> typeToken = new TypeToken<T>() {
         };
 
-        public abstract void onFailure(Throwable throwable);
+        public abstract void onFailure(Exception e);
 
         public abstract void onResult(T result);
     }
@@ -25,13 +25,13 @@ public final class Listener {
         public final TypeToken<T> typeToken = new TypeToken<T>() {
         };
 
-        public abstract void error(Throwable throwable);
+        public abstract void onFailure(Exception e);
 
         public void onResult(java.util.List<T> result) {
             //not implemented
         }
 
-        public void onAdded(T result, java.lang.String key) {
+        public void onAdded(T child, java.lang.String key) {
             //not implemented
         }
     }
@@ -81,7 +81,7 @@ public final class Listener {
 
         public abstract static class Generic<T> {
 
-            public abstract void error(Throwable throwable);
+            public abstract void error(Exception e);
 
             public abstract void success(T result);
         }
@@ -91,19 +91,13 @@ public final class Listener {
             public final TypeToken<T> typeToken = new TypeToken<T>() {
             };
 
-            public abstract void onFailure(Throwable throwable);
+            public abstract void onAdded(T child, java.lang.String key);
 
-            public void onAdded(T result, java.lang.String key) {
-                //not implemented
-            }
+            public abstract void onChanged(T child, java.lang.String key);
 
-            public void onChange(T result, java.lang.String key) {
-                //not implemented
-            }
+            public abstract void onRemoved(T child, java.lang.String key);
 
-            public void onRemoved(T result, java.lang.String key) {
-                //not implemented
-            }
+            public abstract void onFailure(Exception e);
         }
 
         //sketchware
