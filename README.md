@@ -246,6 +246,7 @@ Obtém todo o conteúdo e continua obtendo, mas apenas os filhos que tiveram alt
 // imports
 import com.fb.easy.callback.Listener;
 
+//exemplo de lista
 Map<String, Map<String, Object>> resultList = new HashMap<>();
 
 Db.path("users").get(new Listener.Children.ListMap() {
@@ -295,14 +296,14 @@ Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
 getUsersJob.stop();
 
 ```
-## Add to project
+## Adicionar ao projeto
 
-Add the jitpack to project in build.gradle or settings.gradle (gradle 7+)
+Adicione o jitpack ao projeto em build.gradle or settings.gradle (gradle 7+)
 ``` groovy
 maven { url 'https://jitpack.io' }
 ```
 
-Add the dependence to module (normally app)
+Adicione a dependência no modulo (normalmente o app)
 ``` groovy
 implementation "com.github.Irineu333:FirebaseEasy:1.0.0"
 ```
