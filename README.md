@@ -104,38 +104,43 @@ Db.path("users").post(newUser, new Result.Post() {
 Db.path("users").post(newUser, new Result.Post() {
     @Override
     public void onSuccess(String newKey) {
-        Log.d("result", "Sucesso!!");
         Log.d("result", "key: " + newKey);
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 ```
 ## get
-Obtém um dado do banco, sendo a forma como obtém especificada pelo callback, que é dividido em três tipos principais: `Single`, `Listener` e `Listener.Children`, cada um deles possuindo os tipos padrões; `Map`, `String`, `Boolean`, `Long`, `Double`, e o tipo genérico; `Generic<T>`, e suas versões em lista; `ListMap`, `ListString`, `ListBoolean`, `ListLong`, `ListDouble`, e `ListGeneric<T>`, seguindo o padrão [callback].[tipo].
+Obtém um dado do banco, sendo a forma como obtém especificada pelo callback, que é dividido em três tipos principais: `Single`, `Listener` e `Listener.Children`, cada um deles possuindo os tipos; `Map`, `String`, `Boolean`, `Long`, `Double`, e o tipo genérico; `Generic<T>`, e suas versões em lista; `ListMap`, `ListString`, `ListBoolean`, `ListLong`, `ListDouble`, e `ListGeneric<T>`.
 
 ``` java
 // callbacks
 Single
-Listener // 
-Listener.Children // obtém todo o conteúdo e continua obtendo os filhos que tiveram alterações
+Listener
+Listener.Children
 
-// padrões
+// tipos
 Map // Map<String, Object>
 String
 Boolean
 Long
 Double
+Generic<T> // assume qualquer tipo
 
-// padrões versão lista
+// tipos versão lista
 ListMap // List<Map<String, Object>>
 ListString // List<String>
 ListBoolean // List<Boolean>
 ListLong // List<Long>
 ListDouble //List<Double>
+ListGeneric<T> //List<T> sendo T qualquer tipo
+
+// padrão de chamada
+callback.tipo
+ex: Single.ListMap
 ```
 
 ### get single
@@ -154,7 +159,7 @@ Db.path("users").child(uid).get(new Single.Map() {
 
     @Override
     public void onFailure(Exception e) {
-        Log.d("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 
@@ -167,7 +172,7 @@ Db.path("users").get(new Single.ListMap() {
 
     @Override
     public void onFailure(Exception e) {
-        Log.d("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 
@@ -175,19 +180,21 @@ Db.path("users").get(new Single.ListMap() {
 Db.path("users").get(new Single.ListMap() {
 
     @Override
-    public void onAdded(Map<String, Object> result, String key) {
-        result.put("key", key);
-        Log.d("result", String.valueOf(result));
+    public void onAdded(Map<String, Object> child, String key) {
+        Log.d("child " + key, String.valueOf(child));
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.d("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 ```
 ### get listener
-Obtém todo o conteúdo e continua obtendo tudo sempre que tiver alteração. Assim como get single, você pode sobrescrever os métodos `onResult(T)` e `onFailure(Exception)` para objetos e `onResult(List<T>)` ou `onAdded(T)` e  `onFailure(Exception)` para listas.
+Obtém todo o conteúdo e continua obtendo tudo sempre que tiver alteração. Assim como *get single*, você pode sobrescrever os métodos `onResult(T)` e `onFailure(Exception)` para objetos e `onResult(List<T>)` ou `onAdded(T)` e  `onFailure(Exception)` para listas.
+
+Cuidado: não use em listas grandes ou que você sabe que podem crescer.
+
 ``` java
 // imports
 import com.fb.easy.callback.Listener;
@@ -201,7 +208,7 @@ Db.path("users").child(uid).get(new Listener.Map() {
 
     @Override
     public void onFailure(Exception e) {
-        Log.d("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 
@@ -214,7 +221,7 @@ Db.path("users").get(new Listener.ListMap() {
 
     @Override
     public void onFailure(Exception e) {
-        Log.d("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 
@@ -222,15 +229,45 @@ Db.path("users").get(new Listener.ListMap() {
 Db.path("users").get(new Listener.ListMap() {
 
     @Override
-    public void onAdded(Map<String, Object> result, String key) {
-        result.put("key", key);
-        Log.d("result", String.valueOf(result));
+    public void onAdded(Map<String, Object> child, String key) {
+        Log.d("child " + key, String.valueOf(child));
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.d("result", e.getMessage(), e);
+        Log.e("error", e.getMessage(), e);
     }
 });
 ```
+### get listener children
+Obtém todo o conteúdo e continua obtendo, mas apenas os filhos que tiveram alterações, economizando mais dados que *get listener*. Sua implementação muda muito em relação as outras formas de obter listas, não tendo um método `onResult(List<T> result)`, os métodos que precisão ser sobrescritos são `onAdded(T child, String key)`, `onChanged(T child, String key)`, `onRemoved(T child, String key)` e `onFailure(Exception)`.
+``` java
 
+// imports
+import com.fb.easy.callback.Listener;
+
+Map<String, Map<String, Object>> resultList = new HashMap<>();
+
+Db.path("users").get(new Listener.Children.ListMap() {
+
+    @Override
+    public void onAdded(Map<String, Object> child, String key) {
+        resultList.put(key, child);
+    }
+
+    @Override
+    public void onChanged(Map<String, Object> child, String key) {
+        resultList.put(key, child);
+    }
+
+    @Override
+    public void onRemoved(Map<String, Object> child, String key) {
+        resultList.remove(key);
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+        Log.e("error", e.getMessage(), e);
+    }
+});
+```
