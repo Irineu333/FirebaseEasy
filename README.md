@@ -271,3 +271,27 @@ Db.path("users").get(new Listener.Children.ListMap() {
     }
 });
 ```
+
+### job
+Os callbacks `Listener` e `Listener.Children` retornam um objeto do tipo `Job`que pode ser usado parar o listener.
+``` java 
+
+// imports
+import com.fb.easy.contract.Job;
+
+Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
+
+    @Override
+    public void onResult(List<Map<String, Object>> result) {
+        Log.d("result", String.valueOf(result));
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+        Log.e("error", e.getMessage(), e);
+    }
+});
+
+getUsersJob.stop();
+
+```
