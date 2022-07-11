@@ -12,22 +12,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public final class DbUtils {
-
-    @NonNull
-    public static <T> T parserToGeneric(
-            @Nullable Object data,
-            @NonNull Gson gson,
-            @NonNull TypeToken<T> typeToken
-    ) {
-
-        String json = gson.toJson(data);
-
-        return gson.fromJson(json, typeToken.getType());
-    }
 
     @NonNull
     public static <T> ValueEventListener getEvent(@NonNull final Single.Generic<T> callback) {
@@ -36,20 +24,10 @@ public final class DbUtils {
 
         return new ValueEventListener() {
 
-            private final Gson gson = new Gson();
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 callback.setEndTimeMillis(System.currentTimeMillis());
-
-                callback.onResult(
-                        parserToGeneric(
-                                dataSnapshot.getValue(),
-                                gson,
-                                callback.typeToken
-                        )
-                );
+                callback.onResult(dataSnapshot.getValue(callback.getType()));
             }
 
             @Override
@@ -65,17 +43,9 @@ public final class DbUtils {
 
         return new ValueEventListener() {
 
-            private final Gson gson = new Gson();
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listener.onResult(
-                        parserToGeneric(
-                                dataSnapshot.getValue(),
-                                gson,
-                                listener.typeToken
-                        )
-                );
+                listener.onResult(dataSnapshot.getValue(listener.getType()));
             }
 
             @Override
@@ -92,22 +62,16 @@ public final class DbUtils {
 
         return new ValueEventListener() {
 
-            private final Gson gson = new Gson();
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                 callback.setEndTimeMillis(System.currentTimeMillis());
 
-                List<T> result = new ArrayList<>();
+                final List<T> result = callback.getList();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
-                    T value = parserToGeneric(
-                            child.getValue(),
-                            gson,
-                            callback.typeToken
-                    );
+                    T value = child.getValue(callback.getType());
 
                     callback.onAdded(value, child.getKey());
 
@@ -129,19 +93,14 @@ public final class DbUtils {
     public static <T> ValueEventListener getListEvent(@NonNull final Listener.ListGeneric<T> callback) {
         return new ValueEventListener() {
 
-            private final Gson gson = new Gson();
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<T> result = new ArrayList<>();
+
+                final List<T> result = callback.getList();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
-                    T value = parserToGeneric(
-                            child.getValue(),
-                            gson,
-                            callback.typeToken
-                    );
+                    T value = child.getValue(callback.getType());
 
                     callback.onAdded(value, child.getKey());
 
@@ -162,42 +121,83 @@ public final class DbUtils {
     public static <T> ChildEventListener getListEvent(@NonNull final Listener.Children.ListGeneric<T> listener) {
         return new ChildEventListener() {
 
-            private final Gson gson = new Gson();
+            private final List<T> result = listener.getList();
+            private final LinkedHashMap<String, T> linkedMap = new LinkedHashMap<>();
+
+            private void onResult() {
+                listener.onResult(listener.getList());
+            }
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                T child = dataSnapshot.getValue(listener.getType());
+
+                String key = dataSnapshot.getKey();
+
+                int index = linkedMap.size();
+
+                linkedMap.put(key, child);
+
                 listener.onAdded(
-                        DbUtils.parserToGeneric(
-                                dataSnapshot.getValue(),
-                                gson,
-                                listener.typeToken
-                        ),
-                        dataSnapshot.getKey()
+                        child,
+                        index,
+                        key
                 );
+
+                result.add(child);
+
+                onResult();
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                T child = dataSnapshot.getValue(listener.getType());
+
+                String key = dataSnapshot.getKey();
+
+                linkedMap.put(key, child);
+
+                int index = 0;
+                for (String _key : linkedMap.keySet()) {
+                    if (_key.equals(key)) break;
+                    index++;
+                }
+
+
                 listener.onChanged(
-                        DbUtils.parserToGeneric(
-                                dataSnapshot.getValue(),
-                                gson,
-                                listener.typeToken
-                        ),
+                        child,
+                        index,
                         dataSnapshot.getKey()
                 );
+
+                result.remove(index);
+                result.add(index, child);
+
+                onResult();
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                T child = dataSnapshot.getValue(listener.getType());
+
+                String key = dataSnapshot.getKey();
+
+                linkedMap.remove(key);
+
+                int index = linkedMap.size();
+
                 listener.onRemoved(
-                        DbUtils.parserToGeneric(
-                                dataSnapshot.getValue(),
-                                gson,
-                                listener.typeToken
-                        ),
+                        child,
+                        index,
                         dataSnapshot.getKey()
                 );
+
+                result.remove(index);
+
+                onResult();
             }
 
             @Override
