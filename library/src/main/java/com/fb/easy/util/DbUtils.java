@@ -184,10 +184,14 @@ public final class DbUtils {
 
                 String key = dataSnapshot.getKey();
 
+
+                int index = 0;
+                for (String _key : linkedMap.keySet()) {
+                    if (_key.equals(key)) break;
+                    index++;
+                }
+
                 linkedMap.remove(key);
-
-                int index = linkedMap.size();
-
                 result.remove(index);
 
                 onResult();
