@@ -139,23 +139,23 @@ public final class DbUtils {
 
                 linkedMap.put(key, child);
 
+                result.add(child);
+
+                onResult();
+
                 listener.onAdded(
                         child,
                         index,
                         key
                 );
-
-                result.add(child);
-
-                onResult();
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                T child = dataSnapshot.getValue(listener.getType());
-
                 String key = dataSnapshot.getKey();
+
+                T child = dataSnapshot.getValue(listener.getType());
 
                 linkedMap.put(key, child);
 
@@ -165,17 +165,16 @@ public final class DbUtils {
                     index++;
                 }
 
+                result.remove(index);
+                result.add(index, child);
+
+                onResult();
 
                 listener.onChanged(
                         child,
                         index,
                         dataSnapshot.getKey()
                 );
-
-                result.remove(index);
-                result.add(index, child);
-
-                onResult();
             }
 
             @Override
@@ -189,15 +188,15 @@ public final class DbUtils {
 
                 int index = linkedMap.size();
 
+                result.remove(index);
+
+                onResult();
+
                 listener.onRemoved(
                         child,
                         index,
                         dataSnapshot.getKey()
                 );
-
-                result.remove(index);
-
-                onResult();
             }
 
             @Override
