@@ -1,6 +1,10 @@
 package com.fb.easy.callback;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.reflect.TypeToken;
+
+import java.util.Objects;
 
 public final class Single {
 
@@ -8,9 +12,46 @@ public final class Single {
         //sealed class
     }
 
+    private abstract static class Duration {
+
+        @Nullable
+        private java.lang.Long startTimeMillis;
+
+        @Nullable
+        private java.lang.Long endTimeMillis;
+
+        public long getDuration() {
+
+            Objects.requireNonNull(startTimeMillis, "request not started");
+            Objects.requireNonNull(endTimeMillis, "request not finished");
+
+            return endTimeMillis - startTimeMillis;
+        }
+
+        public void setStartTimeMillis(long startTimeMillis) {
+
+            if (this.startTimeMillis != null) {
+                throw new IllegalStateException("request has already started");
+            }
+
+            this.startTimeMillis = startTimeMillis;
+        }
+
+        public void setEndTimeMillis(long endTimeMillis) {
+
+            Objects.requireNonNull(startTimeMillis, "request not started");
+
+            if (this.endTimeMillis != null) {
+                throw new IllegalStateException("request has already finished");
+            }
+
+            this.endTimeMillis = endTimeMillis;
+        }
+    }
+
     //generic
 
-    public abstract static class Generic<T> {
+    public abstract static class Generic<T> extends Duration {
 
         public final TypeToken<T> typeToken = new TypeToken<T>() {
         };
@@ -20,7 +61,7 @@ public final class Single {
         public abstract void onResult(T result);
     }
 
-    public abstract static class ListGeneric<T> {
+    public abstract static class ListGeneric<T> extends Duration {
 
         public final TypeToken<T> typeToken = new TypeToken<T>() {
         };
@@ -38,10 +79,10 @@ public final class Single {
 
     //sketchware
 
-    public abstract static class Map extends Generic<java.util.Map<java.lang.String, Object>> {
+    public abstract static class Map extends Generic<java.util.HashMap<java.lang.String, Object>> {
     }
 
-    public abstract static class ListMap extends ListGeneric<java.util.Map<java.lang.String, Object>> {
+    public abstract static class ListMap extends ListGeneric<java.util.HashMap<java.lang.String, Object>> {
     }
 
     //basics

@@ -38,10 +38,10 @@ public final class Listener {
 
     //sketchware
 
-    public abstract static class Map extends Generic<java.util.Map<java.lang.String, Object>> {
+    public abstract static class Map extends Generic<java.util.HashMap<java.lang.String, Object>> {
     }
 
-    public abstract static class ListMap extends ListGeneric<java.util.Map<java.lang.String, Object>> {
+    public abstract static class ListMap extends ListGeneric<java.util.HashMap<java.lang.String, Object>> {
     }
 
     //basics
@@ -102,10 +102,10 @@ public final class Listener {
 
         //sketchware
 
-        public abstract static class Map extends Generic<java.util.Map<java.lang.String, Object>> {
+        public abstract static class Map extends Generic<java.util.HashMap<java.lang.String, Object>> {
         }
 
-        public abstract static class ListMap extends ListGeneric<java.util.Map<java.lang.String, Object>> {
+        public abstract static class ListMap extends ListGeneric<java.util.HashMap<java.lang.String, Object>> {
         }
 
         //basics

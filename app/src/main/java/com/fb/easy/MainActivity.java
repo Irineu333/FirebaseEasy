@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.fb.easy.callback.Listener;
-import com.fb.easy.contract.Job;
+import com.fb.easy.callback.Single;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +20,14 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
+        //single
+        //request duration
+        Db.path("users").get(new Single.ListMap() {
 
             @Override
-            public void onResult(List<Map<String, Object>> result) {
+            public void onResult(List<HashMap<String, Object>> result) {
                 Log.d("result", String.valueOf(result));
+                Log.d("duration", String.valueOf(getDuration()));
             }
 
             @Override
@@ -32,7 +35,5 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("error", e.getMessage(), e);
             }
         });
-
-        getUsersJob.stop();
     }
 }

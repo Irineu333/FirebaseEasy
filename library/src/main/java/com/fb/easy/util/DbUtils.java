@@ -30,7 +30,9 @@ public final class DbUtils {
     }
 
     @NonNull
-    public static <T> ValueEventListener getEvent(@NonNull final Single.Generic<T> listener) {
+    public static <T> ValueEventListener getEvent(@NonNull final Single.Generic<T> callback) {
+
+        callback.setStartTimeMillis(System.currentTimeMillis());
 
         return new ValueEventListener() {
 
@@ -38,18 +40,22 @@ public final class DbUtils {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                listener.onResult(
+
+                callback.setEndTimeMillis(System.currentTimeMillis());
+
+                callback.onResult(
                         parserToGeneric(
                                 dataSnapshot.getValue(),
                                 gson,
-                                listener.typeToken
+                                callback.typeToken
                         )
                 );
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                listener.onFailure(databaseError.toException());
+                callback.setEndTimeMillis(System.currentTimeMillis());
+                callback.onFailure(databaseError.toException());
             }
         };
     }
@@ -81,12 +87,18 @@ public final class DbUtils {
 
     @NonNull
     public static <T> ValueEventListener getListEvent(@NonNull final Single.ListGeneric<T> callback) {
+
+        callback.setStartTimeMillis(System.currentTimeMillis());
+
         return new ValueEventListener() {
 
             private final Gson gson = new Gson();
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                callback.setEndTimeMillis(System.currentTimeMillis());
+
                 List<T> result = new ArrayList<>();
 
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
@@ -107,6 +119,7 @@ public final class DbUtils {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.setEndTimeMillis(System.currentTimeMillis());
                 callback.onFailure(databaseError.toException());
             }
         };
