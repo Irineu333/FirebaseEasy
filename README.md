@@ -1,12 +1,25 @@
 # FirebaseEasy [![](https://jitpack.io/v/Irineu333/FirebaseEasy.svg)](https://jitpack.io/#Irineu333/FirebaseEasy)
 
-## Instanciar
-Para começar a utilizar a lib, obtenha uma intância da classe `Db`, por meio do construtor `new Db("path")` ou pelo método `Db.path("path")`.
+## Imports
 
 ``` java
-// imports
+// Db class
 import com.fb.easy.Db;
 
+// callbacks
+import com.fb.easy.callback.Result;
+import com.fb.easy.callback.Single;
+import com.fb.easy.callback.Listener;
+
+// contracts
+import com.fb.easy.contract.Job;
+```
+
+## Iniciar
+
+Para começar a utilizar a lib, obtenha uma intância da classe `Db`, por meio do construtor `new Db("path")` ou pelo método estático `Db.path("path")`, no qual path é o caminho que deseja acessar no seu banco de dados.
+
+``` java
 // constructor
 Db db = new Db("path");
         
@@ -15,6 +28,7 @@ Db db = Db.path("path");
 ```
 
 A partir da instância de `Db` você pode utiliar os seguintes métodos
+
 ``` java
 // enviar dados
 db.set(...)
@@ -24,97 +38,111 @@ db.post(...)
 // obter dados
 db.get(...)
 
-// outros
-db.getPushKey() : String //gera uma nova key inexistente no path
-db.child(String) : Db //obtém uma nova instância de `Db` no caminho especificado dentro do path
+// gerar child key
+db.getPushKey() : String
+
+// acessar um filho
+db.child(String) : Db
 ```
 
-## set
-Escreve um valor, substuindo todo o conteúdo do path. Opcionalmente você pode passar o callback `Result.Set` para tratar o resultado, sobrescrevendo `onSuccess` e  `onFailure(Exception)`. 
+## Enviar dados
+
+### set
+Escreve um valor, substuindo todo o conteúdo do path.
+
 ``` java
 // sem callback
 Db.path("version").set("1.0.0");
+```
 
+Opcionalmente você pode passar uma implementação de `Result.Set` para tratar o resultado, sobrescrevendo `onSuccess` e  `onFailure(Exception)`. 
+
+``` java
 // com callback
-
-// imports
-import com.fb.easy.callback.Result;
-
 Db.path("version").set("1.0.0", new Result.Set() {
     @Override
     public void onSuccess() {
-        Log.d("result", "Sucesso!!");
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("result", e.getMessage(), e);
+    
     }
 });
 ```
-## update
-Atualiza parte dos dados, preservando o que não foi alterado. Opcionalmente você pode passar o callback `Result.Update` para tratar o resultado, sobrescrevendo `onSuccess` e  `onFailure(Exception)`. 
+
+### update
+Atualiza parte dos dados, preservando o que não foi alterado.
+
 ``` java
 // sem callback
 Db.path("users").child(uid).update(user);
+```
 
+Opcionalmente você pode passar uma implementação de `Result.Update` para tratar o resultado, sobrescrevendo `onSuccess` e  `onFailure(Exception)`. 
+
+``` java
 // com callback
-
-// imports
-import com.fb.easy.callback.Result;
-
 Db.path("users").child(uid).update(user, new Result.Update() {
     @Override
     public void onSuccess() {
-        Log.d("result", "Sucesso!!");
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("result", e.getMessage(), e);
+    
     }
 });
 ```
 
-## post
-Escreve o dado como um novo filho, gerando uma nova key. Opcionalmente você pode passar o callback `Result.Post` para tratar o resultado, sobrescrevendo `onSuccess` ou `onSuccess(String newKey)` e `onFailure(Exception)`.
+### post
+Cria um novo filho no path especificado, cujo o child key é gerado com o `getPushKey`.
+
 ``` java
 // sem callback
 Db.path("users").post(user);
+```
 
+Opcionalmente você pode passar uma implementação de `Result.Post` para tratar o resultado, sobrescrevendo `onSuccess` e `onFailure(Exception)`.
+
+``` java
 // com callback
-
-// imports
-import com.fb.easy.callback.Result;
-
-// sobrescrevendo onSuccess()
 Db.path("users").post(newUser, new Result.Post() {
     @Override
     public void onSuccess() {
-        Log.d("result", "Sucesso!!");
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("result", e.getMessage(), e);
+    
     }
 });
 
-// sobrescrevendo onSuccess(String key)
+```
+
+Alternativamente você pode sobrescrever o `onSuccess(String)` para obter a nova child key.
+
+``` java
 Db.path("users").post(newUser, new Result.Post() {
     @Override
-    public void onSuccess(String newKey) {
-        Log.d("result", "key: " + newKey);
+    public void onSuccess(String childKey) {
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
 ```
-## get
-Obtém um dado do banco, sendo a forma como obtém especificada pelo callback, que é dividido em três tipos principais: `Single`, `Listener` e `Listener.Children`, cada um deles possuindo os tipos; `Map`, `String`, `Boolean`, `Long`, `Double`, e o tipo genérico; `Generic<T>`, e suas versões em lista; `ListMap`, `ListString`, `ListBoolean`, `ListLong`, `ListDouble`, e `ListGeneric<T>`.
+
+## Obter dados
+
+### get
+Obtém um dado do banco, sendo a forma como obtém especificada pelo callback implementado, que é dividido em três tipos principais: `Single`, `Listener` e `Listener.Children`, cada um deles possuindo os tipos; `Map`, `String`, `Boolean`, `Long`, `Double`, e o tipo genérico; `Generic<T>`, e suas versões em lista; `ListMap`, `ListString`, `ListBoolean`, `ListLong`, `ListDouble`, e `ListGeneric<T>`.
 
 ``` java
 // callbacks
@@ -123,7 +151,7 @@ Listener
 Listener.Children
 
 // tipos
-Map // Map<String, Object>
+Map // HashMap<String, Object>
 String
 Boolean
 Long
@@ -131,7 +159,7 @@ Double
 Generic<T> // assume qualquer tipo
 
 // tipos versão lista
-ListMap // List<Map<String, Object>>
+ListMap // List<HashMap<String, Object>>
 ListString // List<String>
 ListBoolean // List<Boolean>
 ListLong // List<Long>
@@ -143,72 +171,108 @@ callback.tipo
 ex: Single.ListMap
 ```
 
-### get single
-Obtém todo o conteúdo apenas uma vez. Você pode sobrescrever os métodos `onResult(T)` e `onFailure(Exception)` para objetos e `onResult(List<T>)` ou `onAdded(T)` e  `onFailure(Exception)` para listas.
+#### get single
+Obtém todo o conteúdo apenas uma vez. Você pode sobrescrever os métodos `onResult(T)` e `onFailure(Exception)` para objetos e `onResult(List<T>)` e  `onFailure(Exception)` para listas.
 
 ``` java
-// imports
-import com.fb.easy.callback.Single;
-
 // obter objeto
 Db.path("users").child(uid).get(new Single.Map() {
     @Override
-    public void onResult(Map<String, Object> result) {
-        Log.d("result", String.valueOf(result));
+    public void onResult(HashMap<String, Object> result) {
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
 
 // obter lista
 Db.path("users").get(new Single.ListMap() {
     @Override
-    public void onResult(List<Map<String, Object>> result) {
-        Log.d("result", String.valueOf(result));
+    public void onResult(List<HashMap<String, Object>> result) {
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
-    }
-});
-
-// obter lista, objeto por objeto
-Db.path("users").get(new Single.ListMap() {
-
-    @Override
-    public void onAdded(Map<String, Object> child, String key) {
-        Log.d("child " + key, String.valueOf(child));
-    }
-
-    @Override
-    public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
 ```
-### get listener
-Obtém todo o conteúdo e continua obtendo tudo sempre que tiver alteração. Assim como *get single*, você pode sobrescrever os métodos `onResult(T)` e `onFailure(Exception)` para objetos e `onResult(List<T>)` ou `onAdded(T)` e  `onFailure(Exception)` para listas.
+
+No caso de listas, alternativamente você pode sobrescrever o método `onAdded(T, int index, String key)`, que é chamado em ordem para cada um dos itens da lista. 
+
+``` java
+// obter lista, item por item
+Db.path("users").get(new Single.ListMap() {
+
+    @Override
+    public void onAdded(HashMap<String, Object> child, int index, String key) {
+    
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+    
+    }
+});
+```
+
+Ainda no caso de listas, você também pode alternativamente passar uma lista alvo no construtor, essa lista será atualizada com o resultado da requisição.
+
+``` java
+//exemplo de lista alvo
+List<HashMap<String, Object>> list = new ArrayList<>();
+
+//obter lista
+Db.path("users").get(new Single.ListMap(list) {
+    @Override
+    public void onResult(List<HashMap<String, Object>> result) {
+    
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+    
+    }
+});
+```
+
+Exclusivamente no callback `Single`, você pode obter quanto tempo a requisição levou em milissegundos chamando o método `getDuration()` dentro do escopo do callback.
+
+``` java
+// obter lista
+Db.path("users").get(new Single.ListMap() {
+    @Override
+    public void onResult(List<HashMap<String, Object>> result) {
+        long duration = getDuration();
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+    
+    }
+});
+```
+
+#### get listener
+Obtém todo o conteúdo e escuta as alterações. Assim como *get single*, você pode sobrescrever os métodos `onResult(T)` e `onFailure(Exception)` para objetos e `onResult(List<T>)` e  `onFailure(Exception)` para listas.
 
 Cuidado: não use em listas grandes ou que você sabe que podem crescer.
 
 ``` java
-// imports
-import com.fb.easy.callback.Listener;
-
 // obter objeto
 Db.path("users").child(uid).get(new Listener.Map() {
     @Override
     public void onResult(Map<String, Object> result) {
-        Log.d("result", String.valueOf(result));
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
 
@@ -216,69 +280,128 @@ Db.path("users").child(uid).get(new Listener.Map() {
 Db.path("users").get(new Listener.ListMap() {
     @Override
     public void onResult(List<Map<String, Object>> result) {
-        Log.d("result", String.valueOf(result));
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
+```
 
-// obter lista, objeto por objeto
+Assim como _get single_, você pode alternativamente sobrescever `onAdded(T, int index, String key)`, e obter item por item da lista.
+
+``` java
+// obter lista, item por item
 Db.path("users").get(new Listener.ListMap() {
 
     @Override
-    public void onAdded(Map<String, Object> child, String key) {
-        Log.d("child " + key, String.valueOf(child));
+    public void onAdded(Map<String, Object> child, int index, String key) {
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
 ```
-### get listener children
-Obtém todo o conteúdo e continua obtendo, mas apenas os filhos que tiveram alterações, economizando mais dados que *get listener*. Sua implementação muda muito em relação as outras formas de obter listas, não tendo um método `onResult(List<T> result)`, os métodos que precisão ser sobrescritos são `onAdded(T child, String key)`, `onChanged(T child, String key)`, `onRemoved(T child, String key)` e `onFailure(Exception)`.
+
+Assim como _get single_, você também pode passar uma lista alvo no construtor do callback.
+
 ``` java
+//exemplo de lista alvo
+List<HashMap<String, Object>> list = new ArrayList<>();
 
-// imports
-import com.fb.easy.callback.Listener;
+//escutando usuários
+Db.path("users").get(new Listener.ListMap(list) {
 
-Map<String, Map<String, Object>> resultList = new HashMap<>();
+    @Override
+    public void onAdded(Map<String, Object> child, int index, String key) {
+    
+    }
 
+    @Override
+    public void onFailure(Exception e) {
+    
+    }
+});
+```
+
+#### get listener children
+Obtém todo o conteúdo e escuta as alterações dos filhos individualmente, economizando mais dados que *get listener*. Só pode ser usado em listas, podendo sobrescrever os métodos `onAdded(T child, int index, String key)`, `onChanged(T child, int index, String key)`, `onRemoved(T child, int index, String key)` e `onFailure(Exception)`.
+
+``` java
+//escutando usuários
 Db.path("users").get(new Listener.Children.ListMap() {
 
     @Override
-    public void onAdded(Map<String, Object> child, String key) {
-        resultList.put(key, child);
+    public void onAdded(Map<String, Object> child, int index, String key) {
+    
     }
 
     @Override
-    public void onChanged(Map<String, Object> child, String key) {
-        resultList.put(key, child);
+    public void onChanged(Map<String, Object> child, int index, String key) {
+    
     }
 
     @Override
-    public void onRemoved(Map<String, Object> child, String key) {
-        resultList.remove(key);
+    public void onRemoved(Map<String, Object> child, int index, String key) {
+    
     }
 
     @Override
     public void onFailure(Exception e) {
-        Log.e("error", e.getMessage(), e);
+    
     }
 });
 ```
 
-### job
+Alternativamente você pode sobrescrever `onResult(List<T> result)`, que devolve com todos os filhos resolvida internamentes sempre que ocorre uma alteração.
+
+``` java
+//escutando usuários
+Db.path("users").get(new Listener.Children.ListMap() {
+
+    @Override
+    public void onResult(List<HashMap<String, Object>> result) {
+    
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+    
+    }
+});
+```
+
+Assim como os callbacks anteriores, você pode passar uma lista alvo no construtor.
+
+``` java
+//exemplo de lista alvo
+List<HashMap<String, Object>> list = new ArrayList<>();
+
+//escutando usuários
+Db.path("users").get(new Listener.Children.ListMap(list) {
+
+    @Override
+    public void onResult(List<HashMap<String, Object>> result) {
+    
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+    
+    }
+});
+```
+
+#### job
 Os callbacks `Listener` e `Listener.Children` retornam um objeto do tipo `Job`que pode ser usado para parar o listener por meio do méotdo `stop()`.
-``` java 
 
-// imports
-import com.fb.easy.contract.Job;
-
+``` java
+//obtendo o Job
 Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
 
     @Override
@@ -292,6 +415,8 @@ Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
     }
 });
 
+
+//parando o listener
 getUsersJob.stop();
 
 ```
