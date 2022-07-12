@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public final class Listener {
 
     private Listener() {
@@ -176,27 +177,6 @@ public final class Listener {
             //sealed class
         }
 
-        public abstract static class Generic<T> {
-
-            @NonNull
-            private final GenericTypeIndicator<T> type;
-
-            protected Generic(@NonNull GenericTypeIndicator<T> type) {
-
-                Objects.requireNonNull(type, "type cannot be null");
-
-                this.type = type;
-            }
-
-            public abstract void error(Exception e);
-
-            public abstract void success(T result);
-
-            public GenericTypeIndicator<T> getType() {
-                return type;
-            }
-        }
-
         public abstract static class ListGeneric<T> {
 
             @NonNull
@@ -251,12 +231,6 @@ public final class Listener {
 
         //sketchware
 
-        public abstract static class Map extends Generic<java.util.HashMap<java.lang.String, Object>> {
-            public Map() {
-                super(new GenericTypeIndicator<java.util.HashMap<java.lang.String, Object>>() {});
-            }
-        }
-
         public abstract static class ListMap extends ListGeneric<HashMap<java.lang.String, Object>> {
 
             public ListMap(List<HashMap<java.lang.String, Object>> list) {
@@ -265,32 +239,6 @@ public final class Listener {
 
             public ListMap() {
                 super(new GenericTypeIndicator<java.util.HashMap<java.lang.String, Object>>() {});
-            }
-        }
-
-        //basics
-
-        public abstract static class String extends Generic<java.lang.String> {
-            public String() {
-                super(new GenericTypeIndicator<java.lang.String>() {});
-            }
-        }
-
-        public abstract static class Double extends Generic<java.lang.Double> {
-            public Double() {
-                super(new GenericTypeIndicator<java.lang.Double>() {});
-            }
-        }
-
-        public abstract static class Long extends Generic<java.lang.Long> {
-            public Long() {
-                super(new GenericTypeIndicator<java.lang.Long>() {});
-            }
-        }
-
-        public abstract static class Boolean extends Generic<java.lang.Boolean> {
-            public Boolean() {
-                super(new GenericTypeIndicator<java.lang.Boolean>() {});
             }
         }
 

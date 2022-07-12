@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.fb.easy.callback.Listener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,28 +18,11 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        //single
-        //request duration
         Db.path("users").get(new Listener.Children.ListMap() {
 
             @Override
             public void onResult(List<HashMap<String, Object>> result) {
-
-            }
-
-            @Override
-            public void onAdded(HashMap<String, Object> child, int index, String key) {
-
-            }
-
-            @Override
-            public void onChanged(HashMap<String, Object> child, int index, String key) {
-
-            }
-
-            @Override
-            public void onRemoved(HashMap<String, Object> child, int index, String key) {
-
+                Log.d("result", String.valueOf(result));
             }
 
             @Override
