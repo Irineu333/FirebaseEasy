@@ -17,7 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.util.Map;
+import java.util.HashMap;
 
 @SuppressWarnings("unused")
 public final class Db {
@@ -85,15 +85,22 @@ public final class Db {
         update(map, null);
     }
 
-    public void update(@NonNull Object map, @Nullable final Result.Update result) {
-        ref.updateChildren(
-                DbUtils.parserToGeneric(
-                        map,
-                        new Gson(),
-                        new TypeToken<Map<String, Object>>() {
-                        }
-                )
-        ).addOnCompleteListener(
+    public void update(@NonNull Object obj, @Nullable final Result.Update result) {
+
+        HashMap<String, Object> map;
+
+        try {
+            map = (HashMap<String, Object>) obj;
+        } catch (Exception e) {
+            Gson gson = new Gson();
+
+            map = gson.fromJson(
+                    gson.toJson(obj),
+                    new TypeToken<HashMap<String, Object>>() {}.getType()
+            );
+        }
+
+        ref.updateChildren(map).addOnCompleteListener(
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
