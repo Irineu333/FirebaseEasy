@@ -66,7 +66,7 @@ public final class Listener {
             //not implemented
         }
 
-        public void onAdded(T child, java.lang.String key) {
+        public void onAdded(T child, int index, java.lang.String key) {
             //not implemented
         }
 

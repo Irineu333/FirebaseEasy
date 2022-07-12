@@ -9,11 +9,10 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public final class DbUtils {
 
@@ -69,13 +68,16 @@ public final class DbUtils {
 
                 final List<T> result = callback.getList();
 
+                int index = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
                     T value = child.getValue(callback.getType());
 
-                    callback.onAdded(value, child.getKey());
+                    callback.onAdded(value, index, child.getKey());
 
-                    result.add(value);
+                    result.add(index, value);
+
+                    index++;
                 }
 
                 callback.onResult(result);
@@ -98,13 +100,15 @@ public final class DbUtils {
 
                 final List<T> result = callback.getList();
 
+                int index = 0;
                 for (DataSnapshot child : dataSnapshot.getChildren()) {
 
                     T value = child.getValue(callback.getType());
 
-                    callback.onAdded(value, child.getKey());
+                    callback.onAdded(value, index, child.getKey());
 
-                    result.add(value);
+                    result.add(index, value);
+                    index++;
                 }
 
                 callback.onResult(result);
@@ -122,10 +126,19 @@ public final class DbUtils {
         return new ChildEventListener() {
 
             private final List<T> result = listener.getList();
-            private final LinkedHashMap<String, T> linkedMap = new LinkedHashMap<>();
+            private final SortedMap<String, T> linkedMap = new TreeMap<>();
 
             private void onResult() {
                 listener.onResult(listener.getList());
+            }
+
+            private int getIndex(String key) {
+                int index = 0;
+                for (String _key : linkedMap.keySet()) {
+                    if (_key.equals(key)) break;
+                    index++;
+                }
+                return index;
             }
 
             @Override
@@ -135,11 +148,11 @@ public final class DbUtils {
 
                 String key = dataSnapshot.getKey();
 
-                int index = linkedMap.size();
-
                 linkedMap.put(key, child);
 
-                result.add(child);
+                int index = getIndex(key);
+
+                result.add(index, child);
 
                 onResult();
 
@@ -159,11 +172,7 @@ public final class DbUtils {
 
                 linkedMap.put(key, child);
 
-                int index = 0;
-                for (String _key : linkedMap.keySet()) {
-                    if (_key.equals(key)) break;
-                    index++;
-                }
+                int index = getIndex(key);
 
                 result.remove(index);
                 result.add(index, child);
@@ -184,12 +193,7 @@ public final class DbUtils {
 
                 String key = dataSnapshot.getKey();
 
-
-                int index = 0;
-                for (String _key : linkedMap.keySet()) {
-                    if (_key.equals(key)) break;
-                    index++;
-                }
+                int index = getIndex(key);
 
                 linkedMap.remove(key);
                 result.remove(index);
