@@ -428,5 +428,5 @@ maven { url 'https://jitpack.io' }
 
 Adicione a dependência no modulo (normalmente o app)
 ``` groovy
-implementation "com.github.Irineu333:FirebaseEasy:1.0.0"
+implementation "com.github.Irineu333:FirebaseEasy:1.1.0"
 ```
