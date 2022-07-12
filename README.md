@@ -266,7 +266,7 @@ Cuidado: não use em listas grandes ou que você sabe que podem crescer.
 // obter objeto
 Db.path("users").child(uid).get(new Listener.Map() {
     @Override
-    public void onResult(Map<String, Object> result) {
+    public void onResult(HashMap<String, Object> result) {
     
     }
 
@@ -279,7 +279,7 @@ Db.path("users").child(uid).get(new Listener.Map() {
 // obter lista
 Db.path("users").get(new Listener.ListMap() {
     @Override
-    public void onResult(List<Map<String, Object>> result) {
+    public void onResult(List<HashMap<String, Object>> result) {
     
     }
 
@@ -297,7 +297,7 @@ Assim como _get single_, você pode alternativamente sobrescever `onAdded(T, int
 Db.path("users").get(new Listener.ListMap() {
 
     @Override
-    public void onAdded(Map<String, Object> child, int index, String key) {
+    public void onAdded(HashMap<String, Object> child, int index, String key) {
     
     }
 
@@ -316,9 +316,8 @@ List<HashMap<String, Object>> list = new ArrayList<>();
 
 //escutando usuários
 Db.path("users").get(new Listener.ListMap(list) {
-
     @Override
-    public void onAdded(Map<String, Object> child, int index, String key) {
+    public void onAdded(HashMap<String, Object> child, int index, String key) {
     
     }
 
@@ -337,17 +336,17 @@ Obtém todo o conteúdo e escuta as alterações dos filhos individualmente, eco
 Db.path("users").get(new Listener.Children.ListMap() {
 
     @Override
-    public void onAdded(Map<String, Object> child, int index, String key) {
+    public void onAdded(HashMap<String, Object> child, int index, String key) {
     
     }
 
     @Override
-    public void onChanged(Map<String, Object> child, int index, String key) {
+    public void onChanged(HashMap<String, Object> child, int index, String key) {
     
     }
 
     @Override
-    public void onRemoved(Map<String, Object> child, int index, String key) {
+    public void onRemoved(HashMap<String, Object> child, int index, String key) {
     
     }
 
@@ -420,14 +419,14 @@ Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
 getUsersJob.stop();
 
 ```
-## Add to project
+## Adicionar ao projeto
 
-Add the jitpack to project in build.gradle or settings.gradle (gradle 7+)
+Adicione o jitpack ao projeto em build.gradle or settings.gradle (gradle 7+)
 ``` groovy
 maven { url 'https://jitpack.io' }
 ```
 
-Add the dependence to module (normally app)
+Adicione a dependência no modulo (normalmente o app)
 ``` groovy
 implementation "com.github.Irineu333:FirebaseEasy:1.0.0"
 ```
