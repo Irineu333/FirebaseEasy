@@ -173,15 +173,24 @@ public final class Db {
 
             @Override
             public void stop() {
+                if (!isRunning) return;
+
                 ref.removeEventListener(valueEventListener);
                 isRunning = false;
+                removeJob(this);
+
+                callStopListener();
             }
 
             @Override
             public void start() {
-                stop();
+                if (isRunning) return;
+
                 ref.addValueEventListener(valueEventListener);
                 isRunning = true;
+                addJob(this);
+
+                callStartListener();
             }
 
             @Override
@@ -208,15 +217,24 @@ public final class Db {
 
             @Override
             public void stop() {
+                if (!isRunning) return;
+
                 ref.removeEventListener(valueEventListener);
                 isRunning = false;
+                removeJob(this);
+
+                callStopListener();
             }
 
             @Override
             public void start() {
-                stop();
+                if (isRunning) return;
+
                 ref.addValueEventListener(valueEventListener);
                 isRunning = true;
+                addJob(this);
+
+                callStartListener();
             }
 
             @Override
@@ -245,15 +263,24 @@ public final class Db {
 
             @Override
             public void stop() {
+                if (!isRunning) return;
+
                 ref.removeEventListener(valueEventListener);
                 isRunning = false;
+                removeJob(this);
+
+                callStopListener();
             }
 
             @Override
             public void start() {
-                stop();
+                if (isRunning) return;
+
                 ref.addChildEventListener(valueEventListener);
                 isRunning = true;
+                addJob(this);
+
+                callStartListener();
             }
 
             @Override

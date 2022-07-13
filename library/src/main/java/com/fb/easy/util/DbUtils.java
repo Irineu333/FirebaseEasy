@@ -135,10 +135,12 @@ public final class DbUtils {
             private int getIndex(String key) {
                 int index = 0;
                 for (String _key : linkedMap.keySet()) {
-                    if (_key.equals(key)) break;
+                    if (_key.equals(key)) {
+                        return index;
+                    }
                     index++;
                 }
-                return index;
+                return -1;
             }
 
             @Override
