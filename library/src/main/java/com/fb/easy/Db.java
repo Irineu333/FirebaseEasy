@@ -96,7 +96,8 @@ public final class Db {
 
             map = gson.fromJson(
                     gson.toJson(obj),
-                    new TypeToken<HashMap<String, Object>>() {}.getType()
+                    new TypeToken<HashMap<String, Object>>() {
+                    }.getType()
             );
         }
 
@@ -156,38 +157,108 @@ public final class Db {
     //listener
 
     public <T> Job get(@NonNull Listener.Generic<T> listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getEvent(listener));
+        Job job = createJob(listener);
+
+        job.start();
+
+        return job;
+    }
+
+    public <T> Job createJob(@NonNull Listener.Generic<T> listener) {
+        final ValueEventListener valueEventListener = DbUtils.getEvent(listener);
 
         return new Job() {
+
+            private boolean isRunning = false;
+
             @Override
             public void stop() {
                 ref.removeEventListener(valueEventListener);
+                isRunning = false;
+            }
+
+            @Override
+            public void start() {
+                stop();
+                ref.addValueEventListener(valueEventListener);
+                isRunning = true;
+            }
+
+            @Override
+            public boolean isRunning() {
+                return isRunning;
             }
         };
     }
 
     public <T> Job get(@NonNull Listener.ListGeneric<T> listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getListEvent(listener));
+        Job job = createJob(listener);
+
+        job.start();
+
+        return job;
+    }
+
+    public <T> Job createJob(@NonNull Listener.ListGeneric<T> listener) {
+        final ValueEventListener valueEventListener = DbUtils.getListEvent(listener);
 
         return new Job() {
+
+            private boolean isRunning = false;
+
             @Override
             public void stop() {
                 ref.removeEventListener(valueEventListener);
+                isRunning = false;
+            }
+
+            @Override
+            public void start() {
+                stop();
+                ref.addValueEventListener(valueEventListener);
+                isRunning = true;
+            }
+
+            @Override
+            public boolean isRunning() {
+                return isRunning;
             }
         };
     }
 
     //children listener
     public <T> Job get(@NonNull Listener.Children.ListGeneric<T> listener) {
-        final ChildEventListener valueEventListener =
-                ref.addChildEventListener(DbUtils.getListEvent(listener));
+        Job job = createJob(listener);
+
+        job.start();
+
+        return job;
+    }
+
+    public <T> Job createJob(@NonNull Listener.Children.ListGeneric<T> listener) {
+
+        final ChildEventListener valueEventListener = DbUtils.getListEvent(listener);
 
         return new Job() {
+
+            private boolean isRunning = false;
+
             @Override
             public void stop() {
                 ref.removeEventListener(valueEventListener);
+                isRunning = false;
+            }
+
+            @Override
+            public void start() {
+                stop();
+                ref.addChildEventListener(valueEventListener);
+                isRunning = true;
+            }
+
+            @Override
+            public boolean isRunning() {
+                return isRunning;
             }
         };
     }
