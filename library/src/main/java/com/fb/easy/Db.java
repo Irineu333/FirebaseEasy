@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public final class Db {
@@ -38,7 +39,7 @@ public final class Db {
 
     public Db(@NonNull DatabaseReference ref) {
 
-        if (ref == null) throw new IllegalArgumentException("ref cannot be null");
+        Objects.requireNonNull(ref, "ref cannot be null");
 
         this.ref = ref;
     }
@@ -85,13 +86,16 @@ public final class Db {
         update(map, null);
     }
 
+    @SuppressWarnings("unchecked")
     public void update(@NonNull Object obj, @Nullable final Result.Update result) {
+
+        Objects.requireNonNull(obj, "value cannot be null");
 
         HashMap<String, Object> map;
 
         try {
             map = (HashMap<String, Object>) obj;
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             Gson gson = new Gson();
 
             map = gson.fromJson(
@@ -124,7 +128,7 @@ public final class Db {
 
     public void post(@NonNull Object value, @Nullable final Result.Post result) {
 
-        if (value == null) throw new IllegalArgumentException("value cannot be null");
+        Objects.requireNonNull(value, "value cannot be null");
 
         final DatabaseReference push = ref.push();
 

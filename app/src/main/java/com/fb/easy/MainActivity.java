@@ -59,13 +59,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        job.setOnStartListener(() -> {
-            Toast.makeText(this, "Started", Toast.LENGTH_SHORT).show();
-        });
+        job.setOnStartListener(() -> Toast.makeText(this, "Started", Toast.LENGTH_SHORT).show());
 
-        job.setOnStopListener(() -> {
-            Toast.makeText(this, "Stoped", Toast.LENGTH_SHORT).show();
-        });
+        job.setOnStopListener(() -> Toast.makeText(this, "Stoped", Toast.LENGTH_SHORT).show());
 
         binding.btnStart.setOnClickListener(v -> {
                     int size = list.size();
