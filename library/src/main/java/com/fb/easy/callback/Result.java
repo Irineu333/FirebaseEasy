@@ -18,6 +18,12 @@ public final class Result {
         void onFailure(Exception exception);
     }
 
+    public interface Remove {
+        void onSuccess();
+
+        void onFailure(Exception exception);
+    }
+
     public abstract static class Post {
         public void onSuccess(String key) {
             //not implemented

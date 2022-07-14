@@ -147,6 +147,28 @@ public final class Db {
         });
     }
 
+    public void delete() {
+        delete(null);
+    }
+
+    public void delete(@Nullable final Result.Post result) {
+        ref.removeValue().addOnCompleteListener(
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (result == null) return;
+
+                        if (task.isSuccessful()) {
+                            result.onSuccess();
+                        } else {
+                            result.onFailure(task.getException());
+                        }
+                    }
+                }
+        );
+    }
+
     //instance class
 
     public <T> void get(@NonNull Single.Generic<T> callback) {
