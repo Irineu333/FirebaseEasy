@@ -18,7 +18,7 @@ public final class Result {
         void onFailure(Exception exception);
     }
 
-    public interface Remove {
+    public interface Delete {
         void onSuccess();
 
         void onFailure(Exception exception);

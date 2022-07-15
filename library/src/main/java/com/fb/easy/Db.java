@@ -151,7 +151,7 @@ public final class Db {
         delete(null);
     }
 
-    public void delete(@Nullable final Result.Post result) {
+    public void delete(@Nullable final Result.Delete result) {
         ref.removeValue().addOnCompleteListener(
                 new OnCompleteListener<Void>() {
                     @Override
