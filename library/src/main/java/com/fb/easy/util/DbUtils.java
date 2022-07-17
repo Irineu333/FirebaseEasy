@@ -3,7 +3,6 @@ package com.fb.easy.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fb.easy.Intercept;
 import com.fb.easy.callback.Listener;
 import com.fb.easy.callback.Single;
 import com.google.firebase.database.ChildEventListener;
