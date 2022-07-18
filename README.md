@@ -139,6 +139,29 @@ Db.path("users").post(newUser, new Result.Post() {
 });
 ```
 
+## delete
+Deleta o path especificador.
+
+``` java
+Db.path("user/user1").delete();
+```
+
+Opcionalmente você pode passar uma implementação de `Result.Delete` para tratar o resultado, sobrescrevendo `onSuccess` e `onFailure(Exception)`.
+
+``` java
+Db.path("user/user1").delete(new Result.Delete() {
+    @Override
+    public void onSuccess() {
+
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+
+    }
+});
+```
+
 ## Obter dados
 
 ### get
@@ -422,11 +445,11 @@ getUsersJob.stop();
 ## Adicionar ao projeto
 
 Adicione o jitpack ao projeto em build.gradle or settings.gradle (gradle 7+)
-``` groovy
+``` gradle
 maven { url 'https://jitpack.io' }
 ```
 
 Adicione a dependência no modulo (normalmente o app)
-``` groovy
+``` gradle
 implementation "com.github.Irineu333:FirebaseEasy:1.1.0"
 ```
