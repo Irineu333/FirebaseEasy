@@ -1,4 +1,4 @@
-package com.fb.easy.callback;
+package com.fb.easy;
 
 import androidx.annotation.NonNull;
 

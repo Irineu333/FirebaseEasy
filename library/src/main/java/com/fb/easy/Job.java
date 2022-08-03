@@ -1,4 +1,4 @@
-package com.fb.easy.contract;
+package com.fb.easy;
 
 import java.util.HashSet;
 import java.util.Set;

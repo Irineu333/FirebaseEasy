@@ -3,10 +3,6 @@ package com.fb.easy;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fb.easy.callback.Listener;
-import com.fb.easy.callback.Result;
-import com.fb.easy.callback.Single;
-import com.fb.easy.contract.Job;
 import com.fb.easy.util.DbUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;

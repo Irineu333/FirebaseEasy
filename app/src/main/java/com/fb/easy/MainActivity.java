@@ -6,8 +6,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fb.easy.callback.Listener;
-import com.fb.easy.contract.Job;
 import com.fb.easy.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;

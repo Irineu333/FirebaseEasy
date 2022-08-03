@@ -7,12 +7,12 @@
 import com.fb.easy.Db;
 
 // callbacks
-import com.fb.easy.callback.Result;
-import com.fb.easy.callback.Single;
-import com.fb.easy.callback.Listener;
+import com.fb.easy.Result;
+import com.fb.easy.Single;
+import com.fb.easy.Listener;
 
 // contracts
-import com.fb.easy.contract.Job;
+import com.fb.easy.Job;
 ```
 
 ## Iniciar
