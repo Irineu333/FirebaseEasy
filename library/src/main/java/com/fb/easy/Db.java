@@ -50,22 +50,6 @@ public final class Db {
         return new Db(path);
     }
 
-    public static HashMap<String, Object> increment(double value) {
-        final HashMap<String, Object> map = new HashMap<>();
-        final HashMap<String, Object> increment = new HashMap<>();
-        increment.put("increment", value);
-        map.put(".sv", increment);
-        return map;
-    }
-
-    public static HashMap<String, Object> increment(long value) {
-        final HashMap<String, Object> map = new HashMap<>();
-        final HashMap<String, Object> increment = new HashMap<>();
-        increment.put("increment", value);
-        map.put(".sv", increment);
-        return map;
-    }
-
     //instance methods
 
     public Db child(String child) {
