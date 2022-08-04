@@ -1,5 +1,7 @@
 package com.fb.easy;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -9,11 +11,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
@@ -310,5 +314,32 @@ public final class Db {
                 return isRunning;
             }
         };
+    }
+
+    public void getTimestamp(final Single.Long callback) {
+        Map<String, Object> sendTimestamp = new HashMap<>();
+
+        set(ServerValue.TIMESTAMP, new Result.Set() {
+            @Override
+            public void onSuccess() {
+                get(new Single.Long() {
+                    @Override
+                    public void onResult(Long result) {
+                        delete();
+                        callback.onResult(result);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
     }
 }
