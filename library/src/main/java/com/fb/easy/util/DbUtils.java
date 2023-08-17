@@ -3,8 +3,8 @@ package com.fb.easy.util;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fb.easy.callback.Listener;
-import com.fb.easy.callback.Single;
+import com.fb.easy.Listener;
+import com.fb.easy.Single;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -16,22 +16,35 @@ import java.util.TreeMap;
 
 public final class DbUtils {
 
+    private static void initRequestDuration(Single.Duration duration) {
+        duration.setStartTimeMillis(System.currentTimeMillis());
+    }
+
+    private static void endRequestDuration(Single.Duration  duration) {
+        duration.setEndTimeMillis(System.currentTimeMillis());
+    }
+
+    //object
+
     @NonNull
     public static <T> ValueEventListener getEvent(@NonNull final Single.Generic<T> callback) {
-
-        callback.setStartTimeMillis(System.currentTimeMillis());
-
         return new ValueEventListener() {
+
+            {
+                initRequestDuration(callback);
+            }
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                callback.setEndTimeMillis(System.currentTimeMillis());
+                endRequestDuration(callback);
+
                 callback.onResult(dataSnapshot.getValue(callback.getType()));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.setEndTimeMillis(System.currentTimeMillis());
+                endRequestDuration(callback);
+
                 callback.onFailure(databaseError.toException());
             }
         };
@@ -54,17 +67,20 @@ public final class DbUtils {
         };
     }
 
+    //list
+
     @NonNull
     public static <T> ValueEventListener getListEvent(@NonNull final Single.ListGeneric<T> callback) {
 
-        callback.setStartTimeMillis(System.currentTimeMillis());
-
         return new ValueEventListener() {
+
+            {
+                initRequestDuration(callback);
+            }
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                callback.setEndTimeMillis(System.currentTimeMillis());
+               endRequestDuration(callback);
 
                 final List<T> result = callback.getList();
 
@@ -85,7 +101,8 @@ public final class DbUtils {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                callback.setEndTimeMillis(System.currentTimeMillis());
+                endRequestDuration(callback);
+
                 callback.onFailure(databaseError.toException());
             }
         };
@@ -135,10 +152,12 @@ public final class DbUtils {
             private int getIndex(String key) {
                 int index = 0;
                 for (String _key : linkedMap.keySet()) {
-                    if (_key.equals(key)) break;
+                    if (_key.equals(key)) {
+                        return index;
+                    }
                     index++;
                 }
-                return index;
+                return -1;
             }
 
             @Override

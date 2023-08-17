@@ -1,23 +1,24 @@
 package com.fb.easy;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fb.easy.callback.Listener;
-import com.fb.easy.callback.Result;
-import com.fb.easy.callback.Single;
-import com.fb.easy.contract.Job;
 import com.fb.easy.util.DbUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 @SuppressWarnings("unused")
 public final class Db {
@@ -38,7 +39,7 @@ public final class Db {
 
     public Db(@NonNull DatabaseReference ref) {
 
-        if (ref == null) throw new IllegalArgumentException("ref cannot be null");
+        Objects.requireNonNull(ref, "ref cannot be null");
 
         this.ref = ref;
     }
@@ -85,18 +86,22 @@ public final class Db {
         update(map, null);
     }
 
+    @SuppressWarnings("unchecked")
     public void update(@NonNull Object obj, @Nullable final Result.Update result) {
+
+        Objects.requireNonNull(obj, "value cannot be null");
 
         HashMap<String, Object> map;
 
         try {
             map = (HashMap<String, Object>) obj;
-        } catch (Exception e) {
+        } catch (ClassCastException e) {
             Gson gson = new Gson();
 
             map = gson.fromJson(
                     gson.toJson(obj),
-                    new TypeToken<HashMap<String, Object>>() {}.getType()
+                    new TypeToken<HashMap<String, Object>>() {
+                    }.getType()
             );
         }
 
@@ -123,7 +128,7 @@ public final class Db {
 
     public void post(@NonNull Object value, @Nullable final Result.Post result) {
 
-        if (value == null) throw new IllegalArgumentException("value cannot be null");
+        Objects.requireNonNull(value, "value cannot be null");
 
         final DatabaseReference push = ref.push();
 
@@ -142,6 +147,28 @@ public final class Db {
         });
     }
 
+    public void delete() {
+        delete(null);
+    }
+
+    public void delete(@Nullable final Result.Delete result) {
+        ref.removeValue().addOnCompleteListener(
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        if (result == null) return;
+
+                        if (task.isSuccessful()) {
+                            result.onSuccess();
+                        } else {
+                            result.onFailure(task.getException());
+                        }
+                    }
+                }
+        );
+    }
+
     //instance class
 
     public <T> void get(@NonNull Single.Generic<T> callback) {
@@ -156,39 +183,163 @@ public final class Db {
     //listener
 
     public <T> Job get(@NonNull Listener.Generic<T> listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getEvent(listener));
+        Job job = createJob(listener);
+
+        job.start();
+
+        return job;
+    }
+
+    public <T> Job createJob(@NonNull Listener.Generic<T> listener) {
+        final ValueEventListener valueEventListener = DbUtils.getEvent(listener);
 
         return new Job() {
+
+            private boolean isRunning = false;
+
             @Override
             public void stop() {
+                if (!isRunning) return;
+
                 ref.removeEventListener(valueEventListener);
+                isRunning = false;
+                removeJob(this);
+
+                callStopListener();
+            }
+
+            @Override
+            public void start() {
+                if (isRunning) return;
+
+                ref.addValueEventListener(valueEventListener);
+                isRunning = true;
+                addJob(this);
+
+                callStartListener();
+            }
+
+            @Override
+            public boolean isRunning() {
+                return isRunning;
             }
         };
     }
 
     public <T> Job get(@NonNull Listener.ListGeneric<T> listener) {
-        final ValueEventListener valueEventListener =
-                ref.addValueEventListener(DbUtils.getListEvent(listener));
+        Job job = createJob(listener);
+
+        job.start();
+
+        return job;
+    }
+
+    public <T> Job createJob(@NonNull Listener.ListGeneric<T> listener) {
+        final ValueEventListener valueEventListener = DbUtils.getListEvent(listener);
 
         return new Job() {
+
+            private boolean isRunning = false;
+
             @Override
             public void stop() {
+                if (!isRunning) return;
+
                 ref.removeEventListener(valueEventListener);
+                isRunning = false;
+                removeJob(this);
+
+                callStopListener();
+            }
+
+            @Override
+            public void start() {
+                if (isRunning) return;
+
+                ref.addValueEventListener(valueEventListener);
+                isRunning = true;
+                addJob(this);
+
+                callStartListener();
+            }
+
+            @Override
+            public boolean isRunning() {
+                return isRunning;
             }
         };
     }
 
     //children listener
     public <T> Job get(@NonNull Listener.Children.ListGeneric<T> listener) {
-        final ChildEventListener valueEventListener =
-                ref.addChildEventListener(DbUtils.getListEvent(listener));
+        Job job = createJob(listener);
+
+        job.start();
+
+        return job;
+    }
+
+    public <T> Job createJob(@NonNull Listener.Children.ListGeneric<T> listener) {
+
+        final ChildEventListener valueEventListener = DbUtils.getListEvent(listener);
 
         return new Job() {
+
+            private boolean isRunning = false;
+
             @Override
             public void stop() {
+                if (!isRunning) return;
+
                 ref.removeEventListener(valueEventListener);
+                isRunning = false;
+                removeJob(this);
+
+                callStopListener();
+            }
+
+            @Override
+            public void start() {
+                if (isRunning) return;
+
+                ref.addChildEventListener(valueEventListener);
+                isRunning = true;
+                addJob(this);
+
+                callStartListener();
+            }
+
+            @Override
+            public boolean isRunning() {
+                return isRunning;
             }
         };
+    }
+
+    public void getTimestamp(final Single.Long callback) {
+        Map<String, Object> sendTimestamp = new HashMap<>();
+
+        set(ServerValue.TIMESTAMP, new Result.Set() {
+            @Override
+            public void onSuccess() {
+                get(new Single.Long() {
+                    @Override
+                    public void onResult(Long result) {
+                        delete();
+                        callback.onResult(result);
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        callback.onFailure(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e);
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-package com.fb.easy.callback;
+package com.fb.easy;
 
 public final class Result {
 
@@ -13,6 +13,12 @@ public final class Result {
     }
 
     public interface Update {
+        void onSuccess();
+
+        void onFailure(Exception exception);
+    }
+
+    public interface Delete {
         void onSuccess();
 
         void onFailure(Exception exception);

@@ -7,12 +7,12 @@
 import com.fb.easy.Db;
 
 // callbacks
-import com.fb.easy.callback.Result;
-import com.fb.easy.callback.Single;
-import com.fb.easy.callback.Listener;
+import com.fb.easy.Result;
+import com.fb.easy.Single;
+import com.fb.easy.Listener;
 
 // contracts
-import com.fb.easy.contract.Job;
+import com.fb.easy.Job;
 ```
 
 ## Iniciar
@@ -135,6 +135,29 @@ Db.path("users").post(newUser, new Result.Post() {
     @Override
     public void onFailure(Exception e) {
     
+    }
+});
+```
+
+## delete
+Deleta o path especificador.
+
+``` java
+Db.path("user/user1").delete();
+```
+
+Opcionalmente você pode passar uma implementação de `Result.Delete` para tratar o resultado, sobrescrevendo `onSuccess` e `onFailure(Exception)`.
+
+``` java
+Db.path("user/user1").delete(new Result.Delete() {
+    @Override
+    public void onSuccess() {
+
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+
     }
 });
 ```
@@ -396,11 +419,13 @@ Db.path("users").get(new Listener.Children.ListMap(list) {
 });
 ```
 
-#### job
-Os callbacks `Listener` e `Listener.Children` retornam um objeto do tipo `Job`que pode ser usado para parar o listener por meio do méotdo `stop()`.
+
+
+### job
+Os callbacks `Listener` e `Listener.Children` retornam um objeto do tipo `Job`que pode ser usado para verificar, monitorar ou alterar o estado do listener.
 
 ``` java
-//obtendo o Job
+//obtendo o Job iniciado
 Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
 
     @Override
@@ -413,20 +438,78 @@ Job getUsersJob = Db.path("users").get(new Listener.ListMap() {
         Log.e("error", e.getMessage(), e);
     }
 });
-
-
-//parando o listener
-getUsersJob.stop();
-
 ```
+
+Você também pode obter um `Job` não iniciado chamando `createJob` ao invés de `get`.
+
+``` java
+//obtendo o Job não iniciado
+Job getUsersJob = Db.path("users").createJob(new Listener.ListMap() {
+
+    @Override
+    public void onResult(List<Map<String, Object>> result) {
+        Log.d("result", String.valueOf(result));
+    }
+
+    @Override
+    public void onFailure(Exception e) {
+        Log.e("error", e.getMessage(), e);
+    }
+});
+
+//iniciando job
+getUsersJob.start();
+```
+
+#### isRunning
+Verifica se o listener está em execução.
+``` java
+boolean isRunning = getUsersJob.isRunning();
+```
+
+#### stop
+Para o listener se estiver em execução.
+
+``` java
+getUsersJob.stop();
+```
+
+#### start
+Inicia o listener se não estiver em execução.
+
+``` java
+getUsersJob.start();
+```
+
+#### onStop e onStart
+Você também pode monitorar em tempo real o estado do `Job` através dos listeners `OnStop` e `onStart`.
+
+``` java
+//escutar quando for iniciado
+job.setOnStartListener(new Job.OnStart() {
+    @Override
+    public void onStart() {
+
+    }
+});
+
+//escutar quando for parado
+job.setOnStopListener(new Job.OnStop() {
+    @Override
+    public void onStop() {
+
+    }
+});
+```
+
 ## Adicionar ao projeto
 
-Adicione o jitpack ao projeto em build.gradle or settings.gradle (gradle 7+)
-``` groovy
+Adicione o jitpack ao projeto em build.gradle ou settings.gradle (gradle 7+)
+``` gradle
 maven { url 'https://jitpack.io' }
 ```
 
 Adicione a dependência no modulo (normalmente o app)
-``` groovy
+``` gradle
 implementation "com.github.Irineu333:FirebaseEasy:1.1.0"
 ```

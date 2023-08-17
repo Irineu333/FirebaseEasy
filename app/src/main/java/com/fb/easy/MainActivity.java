@@ -5,30 +5,33 @@ import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.fb.easy.callback.Listener;
-
-import java.util.HashMap;
-import java.util.List;
+import com.fb.easy.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
+
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        Db.path("users").get(new Listener.Children.ListMap() {
+        binding.btnTest.setOnClickListener(view ->
+                Db.path("timestamp").getTimestamp(
+                        new Single.Long() {
+                            @Override
+                            public void onResult(Long result) {
 
-            @Override
-            public void onResult(List<HashMap<String, Object>> result) {
-                Log.d("result", String.valueOf(result));
-            }
+                                Log.d("Test", String.valueOf(result));
+                            }
 
-            @Override
-            public void onFailure(Exception e) {
-                Log.e("error", e.getMessage(), e);
-            }
-        });
+                            @Override
+                            public void onFailure(Exception e) {
+                            }
+                        }
+                ));
+
     }
 }
