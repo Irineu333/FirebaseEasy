@@ -1,5 +1,7 @@
 # FirebaseEasy [![](https://jitpack.io/v/Irineu333/FirebaseEasy.svg)](https://jitpack.io/#Irineu333/FirebaseEasy)
 
+Wrapper para facilitar a utilização do SDK do firebase no Sketchware Pro.
+
 ## Imports
 
 ``` java
@@ -513,3 +515,6 @@ Adicione a dependência no modulo (normalmente o app)
 ``` gradle
 implementation "com.github.Irineu333:FirebaseEasy:1.1.0"
 ```
+
+## Deprecated
+Project discontinued due to my loss of interest in SK.
